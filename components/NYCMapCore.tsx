@@ -1,130 +1,41 @@
 "use client";
 
-import { fetch311PointSample } from "@/lib/nycApi";
-import { emptyFeatureCollection } from "@/lib/geo";
-import { useEffect, useMemo, useState, useRef } from "react";
-import type { FeatureCollection, Point, LineString } from "geojson";
+import { useEffect, useMemo, useRef } from "react";
+import type { FeatureCollection, Point } from "geojson";
 
 export type NYCMapCoreProps = {
-  /** Your own GeoJSON (points work out of the box with the circle layer). */
-  data?: FeatureCollection;
-  /** Fetches a small live 311 sample from NYC Open Data on mount. */
-  loadDemo311?: boolean;
-  /** Optional additional point features (e.g. MTA vehicles). */
-  vehicles?: FeatureCollection;
-  /** Optional route line feature collection. */
-  route?: FeatureCollection;
+  haitianPopData?: any[];
+  schoolsData?: FeatureCollection;
+  librariesData?: FeatureCollection;
+  showHaitianBubbles?: boolean;
+  showSchools?: boolean;
+  showLibraries?: boolean;
+  selectedBorough?: string | null;
   className?: string;
 };
 
-function formatHoverText(properties: Record<string, unknown> | null) {
-  if (!properties) return "";
-  const priority = [
-    "complaint_type",
-    "status",
-    "borough",
-    "created_date",
-    "unique_key",
-  ] as const;
-  const entries: string[] = [];
-
-  for (const key of priority) {
-    const v = properties[key];
-    if (v !== undefined && v !== null && String(v).length > 0) {
-      entries.push(`<b>${key}</b>: ${v}`);
-    }
-  }
-
-  const rest = Object.entries(properties)
-    .filter(([k]) => !priority.includes(k as (typeof priority)[number]))
-    .filter(([, v]) => v !== undefined && v !== null && String(v).length > 0)
-    .slice(0, 6)
-    .map(([k, v]) => `<b>${k}</b>: ${v}`);
-
-  return [...entries, ...rest].join("<br>");
-}
-
-function extractPoints(fc: FeatureCollection) {
-  const lat: number[] = [];
-  const lon: number[] = [];
-  const text: string[] = [];
-
-  for (const f of fc.features) {
-    if (f.geometry.type === "Point") {
-      const geom = f.geometry as Point;
-      lon.push(geom.coordinates[0]);
-      lat.push(geom.coordinates[1]);
-      text.push(formatHoverText(f.properties as Record<string, unknown>));
-    }
-  }
-  return { lat, lon, text };
-}
-
-function extractLines(fc: FeatureCollection) {
-  const lat: (number | null)[] = [];
-  const lon: (number | null)[] = [];
-
-  for (const f of fc.features) {
-    if (f.geometry.type === "LineString") {
-      const geom = f.geometry as LineString;
-      for (const coord of geom.coordinates) {
-        lon.push(coord[0]);
-        lat.push(coord[1]);
-      }
-      lon.push(null);
-      lat.push(null);
-    }
-  }
-  return { lat, lon };
-}
+const boroughCenters: Record<string, { lat: number; lon: number; zoom: number }> = {
+  "Brooklyn": { lat: 40.6501, lon: -73.9496, zoom: 11.2 },
+  "Queens": { lat: 40.7282, lon: -73.7949, zoom: 11.2 },
+  "Manhattan": { lat: 40.7831, lon: -73.9712, zoom: 11.8 },
+  "Bronx": { lat: 40.8448, lon: -73.8648, zoom: 11.8 },
+  "Staten Island": { lat: 40.5795, lon: -74.1502, zoom: 11.2 }
+};
 
 export default function NYCMapCore({
-  data: dataProp,
-  loadDemo311 = true,
-  vehicles,
-  route,
+  haitianPopData = [],
+  schoolsData,
+  librariesData,
+  showHaitianBubbles = true,
+  showSchools = true,
+  showLibraries = true,
+  selectedBorough = null,
   className,
 }: NYCMapCoreProps) {
-  const [fc, setFc] = useState<FeatureCollection>(() =>
-    dataProp ?? emptyFeatureCollection()
-  );
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (dataProp) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFc(dataProp);
-      return;
-    }
-    if (!loadDemo311) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFc(emptyFeatureCollection());
-      return;
-    }
-
-    let cancelled = false;
-    setLoadError(null);
-
-    fetch311PointSample()
-      .then((collection) => {
-        if (!cancelled) setFc(collection);
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) {
-          setLoadError(
-            err instanceof Error ? err.message : "Could not load demo data."
-          );
-          setFc(emptyFeatureCollection());
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [dataProp, loadDemo311]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const mapData = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // Standard dummy trace to ensure Plotly initializes even with zero data
     const traces: any[] = [
       {
         type: "scattermapbox",
@@ -136,120 +47,237 @@ export default function NYCMapCore({
       },
     ];
 
-    // Main points (311 data or user data)
-    if (fc && fc.features.length > 0) {
-      const pts = extractPoints(fc);
-      traces.push({
-        type: "scattermapbox",
-        mode: "markers",
-        lat: pts.lat,
-        lon: pts.lon,
-        text: pts.text,
-        hoverinfo: "text",
-        marker: {
-          color: "#1d4ed8",
-          size: 8,
-          opacity: 0.88,
-        },
-        name: "Data Points",
+    // 1. Haitian population bubbles at borough centroids
+    if (showHaitianBubbles && haitianPopData && haitianPopData.length > 0) {
+      const bubbleLat: number[] = [];
+      const bubbleLon: number[] = [];
+      const bubbleSizes: number[] = [];
+      const bubbleText: string[] = [];
+
+      const boroCenters: Record<string, { lat: number; lon: number }> = {
+        "Brooklyn": { lat: 40.6501, lon: -73.9496 },
+        "Queens": { lat: 40.7282, lon: -73.7949 },
+        "Manhattan": { lat: 40.7831, lon: -73.9712 },
+        "Bronx": { lat: 40.8448, lon: -73.8648 },
+        "Staten Island": { lat: 40.5795, lon: -74.1502 }
+      };
+
+      haitianPopData.forEach((item) => {
+        const center = boroCenters[item.boroughName];
+        if (center) {
+          bubbleLat.push(center.lat);
+          bubbleLon.push(center.lon);
+          
+          // Bubble size scales visually based on population
+          const size = 15 + Math.sqrt(item.haitianPop) * 0.18;
+          bubbleSizes.push(size);
+          
+          bubbleText.push(
+            `<b>${item.boroughName} Demographics</b><br>` +
+            `• Haitian Ancestry: <b>${item.haitianPop.toLocaleString()}</b><br>` +
+            `• French/Haitian Speakers: <b>${item.speakers.toLocaleString()}</b><br>` +
+            `• Limited English Speakers: <b>${item.limitedEnglish.toLocaleString()}</b><br>` +
+            `• Internet Deficit: <b>${item.pctNoInternet.toFixed(1)}%</b> households<br>` +
+            `• Low Literacy (No HS Diploma): <b>${item.pctNoHS.toFixed(1)}%</b> adults`
+          );
+        }
       });
+
+      if (bubbleLat.length > 0) {
+        traces.push({
+          type: "scattermapbox",
+          mode: "markers",
+          lat: bubbleLat,
+          lon: bubbleLon,
+          text: bubbleText,
+          hoverinfo: "text",
+          marker: {
+            size: bubbleSizes,
+            color: "rgba(249, 115, 22, 0.45)", // Warm transparent Amber
+            line: {
+              color: "rgba(234, 88, 12, 0.9)", // Deep orange stroke
+              width: 2.5
+            }
+          },
+          name: "Haitian Population Density",
+          showlegend: true
+        });
+      }
     }
 
-    // Vehicle points
-    if (vehicles && vehicles.features.length > 0) {
-      const vpts = extractPoints(vehicles);
-      traces.push({
-        type: "scattermapbox",
-        mode: "markers",
-        lat: vpts.lat,
-        lon: vpts.lon,
-        text: vpts.text,
-        hoverinfo: "text",
-        marker: {
-          color: "#dc2626",
-          size: 10,
-          opacity: 0.92,
-        },
-        name: "Vehicles",
+    // 2. NYC High Schools color-coded by graduation rate
+    if (showSchools && schoolsData && schoolsData.features.length > 0) {
+      const schoolLat: number[] = [];
+      const schoolLon: number[] = [];
+      const schoolColors: string[] = [];
+      const schoolText: string[] = [];
+
+      schoolsData.features.forEach((f) => {
+        if (f.geometry.type === "Point") {
+          const coords = (f.geometry as Point).coordinates;
+          const props = f.properties || {};
+          
+          schoolLat.push(coords[1]);
+          schoolLon.push(coords[0]);
+          
+          const gradRate = parseFloat(props.graduation_rate) || 0;
+          const attendance = parseFloat(props.attendance_rate) || 0;
+          const safety = parseFloat(props.pct_stu_safe) || 0;
+          
+          let color = "rgba(156, 163, 175, 0.8)"; // Neutral grey for missing rates
+          if (props.graduation_rate !== undefined && props.graduation_rate !== null) {
+            if (gradRate < 0.60) {
+              color = "rgba(239, 68, 68, 0.9)"; // Red: high support need
+            } else if (gradRate >= 0.60 && gradRate < 0.80) {
+              color = "rgba(245, 158, 11, 0.9)"; // Amber: medium need
+            } else {
+              color = "rgba(16, 185, 129, 0.9)"; // Emerald Green: stable / high support
+            }
+          }
+          schoolColors.push(color);
+
+          const gradPercent = props.graduation_rate ? `${Math.round(gradRate * 100)}%` : "N/A";
+          const safetyPercent = props.pct_stu_safe ? `${Math.round(safety * 100)}%` : "N/A";
+          const attendancePercent = props.attendance_rate ? `${Math.round(attendance * 100)}%` : "N/A";
+          const ellDesc = props.ell_programs || "None reported";
+
+          schoolText.push(
+            `<b>${props.school_name}</b> (${props.dbn})<br>` +
+            `• Neighborhood: <b>${props.neighborhood || "N/A"}</b><br>` +
+            `• Graduation Rate: <span style="color:${gradRate < 0.60 ? '#ef4444' : gradRate < 0.80 ? '#f59e0b' : '#10b981'}"><b>${gradPercent}</b></span><br>` +
+            `• Student Safety: <b>${safetyPercent}</b><br>` +
+            `• Attendance Rate: <b>${attendancePercent}</b><br>` +
+            `• ESL / ELL Programs: <b>${ellDesc}</b>`
+          );
+        }
       });
+
+      if (schoolLat.length > 0) {
+        traces.push({
+          type: "scattermapbox",
+          mode: "markers",
+          lat: schoolLat,
+          lon: schoolLon,
+          text: schoolText,
+          hoverinfo: "text",
+          marker: {
+            size: 8,
+            color: schoolColors,
+            opacity: 0.95
+          },
+          name: "High Schools",
+          showlegend: true
+        });
+      }
     }
 
-    // Route lines
-    if (route && route.features.length > 0) {
-      const lines = extractLines(route);
-      traces.push({
-        type: "scattermapbox",
-        mode: "lines",
-        lat: lines.lat,
-        lon: lines.lon,
-        line: {
-          color: "#16a34a",
-          width: 4,
-        },
-        name: "Route",
-        hoverinfo: "none",
+    // 3. Public libraries (tutoring hubs)
+    if (showLibraries && librariesData && librariesData.features.length > 0) {
+      const libLat: number[] = [];
+      const libLon: number[] = [];
+      const libText: string[] = [];
+
+      librariesData.features.forEach((f) => {
+        if (f.geometry.type === "Point") {
+          const coords = (f.geometry as Point).coordinates;
+          const props = f.properties || {};
+          
+          libLat.push(coords[1]);
+          libLon.push(coords[0]);
+          
+          libText.push(
+            `<b>${props.name} Library</b> (${props.system} System)<br>` +
+            `• Address: <b>${props.streetAddress}, ${props.city}</b><br>` +
+            `<i>Provides free after-school academic support and literacy tutoring.</i>`
+          );
+        }
       });
+
+      if (libLat.length > 0) {
+        traces.push({
+          type: "scattermapbox",
+          mode: "markers",
+          lat: libLat,
+          lon: libLon,
+          text: libText,
+          hoverinfo: "text",
+          marker: {
+            size: 9,
+            color: "rgba(6, 182, 212, 0.95)", // Cyan representing free resources
+            opacity: 0.95,
+            symbol: "circle"
+          },
+          name: "Libraries (Tutoring Centers)",
+          showlegend: true
+        });
+      }
     }
 
     return traces;
-  }, [fc, vehicles, route]);
-
-  const featureCount = fc.features.length;
-  const containerRef = useRef<HTMLDivElement>(null);
+  }, [haitianPopData, schoolsData, librariesData, showHaitianBubbles, showSchools, showLibraries]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     let isMounted = true;
 
-    // Dynamically load Plotly
+    // Dynamically load Plotly to prevent SSR issues
     import("plotly.js-dist-min").then((PlotlyModule) => {
       if (!isMounted) return;
       const Plotly = PlotlyModule.default || PlotlyModule;
 
+      const targetCenter = selectedBorough && boroughCenters[selectedBorough]
+        ? { lat: boroughCenters[selectedBorough].lat, lon: boroughCenters[selectedBorough].lon }
+        : { lat: 40.7128, lon: -74.006 };
+      
+      const targetZoom = selectedBorough && boroughCenters[selectedBorough]
+        ? boroughCenters[selectedBorough].zoom
+        : 10;
+
       const layout = {
         autosize: true,
         margin: { l: 0, r: 0, t: 0, b: 0 },
-        showlegend: false,
+        showlegend: true,
+        legend: {
+          x: 0.98,
+          y: 0.98,
+          xanchor: 'right',
+          yanchor: 'top',
+          bgcolor: 'rgba(39, 39, 42, 0.95)', // Premium dark grey background for overlay
+          bordercolor: '#3f3f46',
+          borderwidth: 1,
+          font: { size: 10, color: '#f4f4f5' }
+        },
         mapbox: {
           style: "carto-positron",
-          center: { lat: 40.7128, lon: -74.006 },
-          zoom: 10,
+          center: targetCenter,
+          zoom: targetZoom,
         },
         hovermode: "closest",
       };
 
       const config = { displayModeBar: false, responsive: true };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Plotly.newPlot(containerRef.current!, mapData, layout as any, config).catch((e: unknown) => console.error("Plotly render error:", e));
-    }).catch(err => console.error("Failed to load plotly.js", err));
+      Plotly.react(containerRef.current!, mapData, layout as any, config).catch((e: unknown) =>
+        console.error("Plotly render error:", e)
+      );
+    }).catch((err) => console.error("Failed to load plotly.js", err));
 
     return () => {
       isMounted = false;
-      if (containerRef.current) {
-        import("plotly.js-dist-min").then((PlotlyModule) => {
-          const Plotly = PlotlyModule.default || PlotlyModule;
-          Plotly.purge(containerRef.current!);
-        });
-      }
     };
-  }, [mapData]);
+  }, [mapData, selectedBorough]);
 
   return (
     <div className={className ?? "relative h-full w-full"}>
-      <div ref={containerRef} className="absolute inset-0 h-full w-full" />
-
-      <div className="pointer-events-none absolute right-3 top-3 z-10 max-w-[min(100%-1.5rem,320px)] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 text-xs text-zinc-700 shadow-sm backdrop-blur-sm">
-        <p className="font-semibold text-zinc-900">NYC Map (Plotly)</p>
-        <p className="mt-0.5 leading-snug">
-          {featureCount === 0
-            ? "No features loaded — pass GeoJSON via the map component or enable the 311 demo."
-            : `${featureCount.toLocaleString()} point${featureCount === 1 ? "" : "s"} on the map.`}
+      <div ref={containerRef} className="absolute inset-0 h-full w-full bg-zinc-950" />
+      
+      {/* Dynamic Map Status Card */}
+      <div className="pointer-events-none absolute right-3 bottom-3 z-10 max-w-[min(100%-1.5rem,320px)] rounded-lg border border-zinc-800 bg-zinc-950/95 px-3 py-2 text-xs text-zinc-300 shadow-xl backdrop-blur-md">
+        <p className="font-semibold text-zinc-100">Haitian Educational Equity Map</p>
+        <p className="mt-0.5 leading-snug text-zinc-400">
+          Visualizing resource overlap to uncover tutoring deserts and high-need school corridors.
         </p>
-        {loadError && (
-          <p className="mt-1 font-medium text-red-700">Demo load: {loadError}</p>
-        )}
       </div>
     </div>
   );
