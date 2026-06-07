@@ -1,4 +1,12 @@
 # NYC Map: Haitian Demographics & Educational Need in NYC
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Stage](https://img.shields.io/badge/stage-research%20prototype-orange)
+![Community](https://img.shields.io/badge/community-Haitian%20NYC-red)
+![Analysis](https://img.shields.io/badge/analysis-educational%20need-blue)
+![Feature](https://img.shields.io/badge/feature-layered%20map-teal)
+![Feature](https://img.shields.io/badge/feature-borough%20analysis-0f766e)
+![Support](https://img.shields.io/badge/focus-ESL%20%26%20literacy-green)
+![Data](https://img.shields.io/badge/data-public%20datasets-yellow)
 
 An interactive geospatial web application that highlights where high Haitian population density in New York City overlaps with limited educational resources and support. The project combines U.S. Census Bureau demographic indicators with NYC Open Data on schools and public libraries to reveal high-need corridors for ESL support, literacy access, and after-school learning resources.
 
