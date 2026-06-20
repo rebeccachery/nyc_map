@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
+import { getCensusApiKey } from "@/lib/census";
 
 export const dynamic = "force-dynamic";
-
-const API_KEY = "a6786f1b1d948dbb737d8f51dc71ee31df5ea8b4";
 const STATE_FIPS = "36";
 const NYC_COUNTIES = ["005", "047", "061", "081", "085"];
 
@@ -19,7 +18,7 @@ const variables = [
   "B15003_012E", "B15003_013E", "B15003_014E", "B15003_015E", "B15003_016E"
 ].join(",");
 
-const CENSUS_URL = `https://api.census.gov/data/2022/acs/acs5?get=NAME,${variables}&for=county:*&in=state:${STATE_FIPS}&key=${API_KEY}`;
+const CENSUS_URL = `https://api.census.gov/data/2022/acs/acs5?get=NAME,${variables}&for=county:*&in=state:${STATE_FIPS}&key=${getCensusApiKey()}`;
 
 export async function GET() {
   try {

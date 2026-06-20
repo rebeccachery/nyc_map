@@ -1,22 +1,5 @@
-import type { Feature, FeatureCollection, GeoJsonProperties } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 
-export function emptyFeatureCollection(): FeatureCollection {
-  return { type: "FeatureCollection", features: [] };
-}
-
-function toNumber(value: unknown): number | null {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const n = parseFloat(value);
-    return Number.isFinite(n) ? n : null;
-  }
-  return null;
-}
-
-/**
- * Convert tabular API rows (e.g. Socrata) into GeoJSON points for the map.
- * Common NYC columns: `latitude` / `longitude`, or `lat` / `long`.
- */
 export function rowsToPointFeatureCollection(
   rows: Record<string, unknown>[],
   options: {
@@ -24,19 +7,48 @@ export function rowsToPointFeatureCollection(
     longitudeKey: string;
   }
 ): FeatureCollection {
-  const { latitudeKey, longitudeKey } = options;
-  const features: Feature[] = [];
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    const lat = toNumber(row[latitudeKey]);
-    const lng = toNumber(row[longitudeKey]);
-    if (lat === null || lng === null) continue;
+  const features: Feature[] = rows
+    .map((row) => {
+      const lat = parseFloat(String(row[options.latitudeKey]));
+      const lng = parseFloat(String(row[options.longitudeKey]));
+      if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
 
-    features.push({
-      type: "Feature",
-      geometry: { type: "Point", coordinates: [lng, lat] },
-      properties: row as GeoJsonProperties,
-    });
-  }
+      return {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [lng, lat],
+        },
+        properties: row,
+      } satisfies Feature;
+    })
+    .filter(Boolean) as Feature[];
+
   return { type: "FeatureCollection", features };
+}
+
+export function getFeatureCentroid(feature: Feature): { lat: number; lon: number } | null {
+  const geom = feature.geometry;
+  if (!geom) return null;
+
+  if (geom.type === "Point") {
+    const [lon, lat] = geom.coordinates;
+    return { lat, lon };
+  }
+
+  if (geom.type === "MultiPolygon" || geom.type === "Polygon") {
+    const rings =
+      geom.type === "Polygon" ? [geom.coordinates[0]] : geom.coordinates.map((p) => p[0]);
+    const ring = rings[0];
+    if (!ring?.length) return null;
+    let latSum = 0;
+    let lonSum = 0;
+    for (const [lon, lat] of ring) {
+      latSum += lat;
+      lonSum += lon;
+    }
+    return { lat: latSum / ring.length, lon: lonSum / ring.length };
+  }
+
+  return null;
 }
