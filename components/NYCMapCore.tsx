@@ -4,6 +4,14 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { FeatureCollection, Point } from "geojson";
 import { HAITIAN_COLORSCALE, getActiveNeedFromProperties, tierLabel, type NeedScoreMode } from "@/lib/haitianNeed";
 import { getFeatureCentroid } from "@/lib/geo";
+import { parseModzctaLabel } from "@/lib/format";
+import {
+  buildBoroughHoverText,
+  buildLibraryHoverText,
+  buildSchoolHoverText,
+  buildZctaHoverText,
+  getMapStatusLines,
+} from "@/lib/mapHoverText";
 
 export type NYCMapCoreProps = {
   haitianPopData?: any[];
@@ -19,6 +27,7 @@ export type NYCMapCoreProps = {
   selectedBorough?: string | null;
   selectedZcta?: string | null;
   onSelectZcta?: (zcta: string | null) => void;
+  loadingHaitianZcta?: boolean;
   className?: string;
 };
 
@@ -44,6 +53,33 @@ function applyOpacityToColorscale(
   });
 }
 
+type PlotlyClickData = { points?: Array<{ location?: string }> };
+
+type PlotlyGraphDiv = HTMLDivElement & {
+  on?: (event: string, handler: (data: PlotlyClickData) => void) => void;
+  removeAllListeners?: (event: string) => void;
+};
+
+function bindPlotlyClick(
+  container: HTMLDivElement,
+  handler: (data: PlotlyClickData) => void
+): () => void {
+  const gd = container as PlotlyGraphDiv;
+
+  if (typeof gd.on === "function") {
+    gd.removeAllListeners?.("plotly_click");
+    gd.on("plotly_click", handler);
+    return () => gd.removeAllListeners?.("plotly_click");
+  }
+
+  const domHandler = (event: Event) => {
+    const detail = (event as CustomEvent<PlotlyClickData>).detail;
+    handler(detail ?? {});
+  };
+  container.addEventListener("plotly_click", domHandler);
+  return () => container.removeEventListener("plotly_click", domHandler);
+}
+
 export default function NYCMapCore({
   haitianPopData = [],
   haitianZctaData,
@@ -58,9 +94,12 @@ export default function NYCMapCore({
   selectedBorough = null,
   selectedZcta = null,
   onSelectZcta,
+  loadingHaitianZcta = false,
   className,
 }: NYCMapCoreProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const unbindClickRef = useRef<(() => void) | null>(null);
+  const handlePlotlyClickRef = useRef<(data: PlotlyClickData) => void>(() => {});
 
   const filteredZctaFeatures = useMemo(() => {
     if (!haitianZctaData?.features.length) return [];
@@ -98,17 +137,7 @@ export default function NYCMapCore({
         const active = getActiveNeedFromProperties(p, needScoreMode);
         locations.push(zcta);
         zValues.push(active.colorValue);
-        hoverText.push(
-          `<b>ZIP ${zcta}</b>${p.label ? ` (${p.label})` : ""}<br>` +
-            `• Need Level: <b>${tierLabel(active.needTier)}</b><br>` +
-            `• Haitian Ancestry: <b>${Number(p.haitianPop).toLocaleString()}</b> (${Number(p.haitianPopPct).toFixed(1)}%)<br>` +
-            (needScoreMode === "education"
-              ? `• Edu. Need Score: <b>${active.scoreValue.toFixed(1)}</b><br>`
-              : "") +
-            `• Creole Speakers: <b>${Number(p.speakers).toLocaleString()}</b><br>` +
-            `• Internet Deficit: <b>${Number(p.pctNoInternet).toFixed(1)}%</b><br>` +
-            `<i>Click for neighborhood details</i>`
-        );
+        hoverText.push(buildZctaHoverText(p, needScoreMode));
       });
 
       traces.push({
@@ -180,14 +209,7 @@ export default function NYCMapCore({
           bubbleLon.push(center.lon);
           const size = 15 + Math.sqrt(item.haitianPop) * 0.18;
           bubbleSizes.push(size);
-          bubbleText.push(
-            `<b>${item.boroughName} Demographics</b><br>` +
-              `• Haitian Ancestry: <b>${item.haitianPop.toLocaleString()}</b><br>` +
-              `• French/Haitian Speakers: <b>${item.speakers.toLocaleString()}</b><br>` +
-              `• Limited English Speakers: <b>${item.limitedEnglish.toLocaleString()}</b><br>` +
-              `• Internet Deficit: <b>${item.pctNoInternet.toFixed(1)}%</b> households<br>` +
-              `• Low Literacy (No HS Diploma): <b>${item.pctNoHS.toFixed(1)}%</b> adults`
-          );
+          bubbleText.push(buildBoroughHoverText(item));
         }
       });
 
@@ -225,8 +247,6 @@ export default function NYCMapCore({
           schoolLon.push(coords[0]);
 
           const gradRate = parseFloat(props.graduation_rate) || 0;
-          const attendance = parseFloat(props.attendance_rate) || 0;
-          const safety = parseFloat(props.pct_stu_safe) || 0;
 
           let color = "rgba(156, 163, 175, 0.8)";
           if (props.graduation_rate !== undefined && props.graduation_rate !== null) {
@@ -235,22 +255,7 @@ export default function NYCMapCore({
             else color = "rgba(16, 185, 129, 0.9)";
           }
           schoolColors.push(color);
-
-          const gradPercent = props.graduation_rate ? `${Math.round(gradRate * 100)}%` : "N/A";
-          const safetyPercent = props.pct_stu_safe ? `${Math.round(safety * 100)}%` : "N/A";
-          const attendancePercent = props.attendance_rate
-            ? `${Math.round(attendance * 100)}%`
-            : "N/A";
-          const ellDesc = props.ell_programs || "None reported";
-
-          schoolText.push(
-            `<b>${props.school_name}</b> (${props.dbn})<br>` +
-              `• Neighborhood: <b>${props.neighborhood || "N/A"}</b><br>` +
-              `• Graduation Rate: <span style="color:${gradRate < 0.6 ? "#ef4444" : gradRate < 0.8 ? "#f59e0b" : "#10b981"}"><b>${gradPercent}</b></span><br>` +
-              `• Student Safety: <b>${safetyPercent}</b><br>` +
-              `• Attendance Rate: <b>${attendancePercent}</b><br>` +
-              `• ESL / ELL Programs: <b>${ellDesc}</b>`
-          );
+          schoolText.push(buildSchoolHoverText(props));
         }
       });
 
@@ -280,11 +285,7 @@ export default function NYCMapCore({
           const props = f.properties || {};
           libLat.push(coords[1]);
           libLon.push(coords[0]);
-          libText.push(
-            `<b>${props.name} Library</b> (${props.system} System)<br>` +
-              `• Address: <b>${props.streetAddress}, ${props.city}</b><br>` +
-              `<i>Provides free after-school academic support and literacy tutoring.</i>`
-          );
+          libText.push(buildLibraryHoverText(props));
         }
       });
 
@@ -324,13 +325,15 @@ export default function NYCMapCore({
   ]);
 
   const handlePlotlyClick = useCallback(
-    (event: { points?: Array<{ location?: string }> }) => {
+    (event: PlotlyClickData) => {
       if (!onSelectZcta || !event.points?.length) return;
       const zcta = event.points[0].location;
       if (zcta) onSelectZcta(String(zcta));
     },
     [onSelectZcta]
   );
+
+  handlePlotlyClickRef.current = handlePlotlyClick;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -381,14 +384,24 @@ export default function NYCMapCore({
         Plotly.react(container, mapData, layout as any, {
           displayModeBar: false,
           responsive: true,
-        }).catch((e: unknown) => console.error("Plotly render error:", e));
+        })
+          .then(() => {
+            if (!isMounted || !onSelectZcta) return;
+            unbindClickRef.current?.();
+            unbindClickRef.current = bindPlotlyClick(container, (data) => {
+              handlePlotlyClickRef.current(data);
+            });
+          })
+          .catch((e: unknown) => console.error("Plotly render error:", e));
       })
       .catch((err) => console.error("Failed to load plotly.js", err));
 
     return () => {
       isMounted = false;
+      unbindClickRef.current?.();
+      unbindClickRef.current = null;
     };
-  }, [mapData, selectedBorough]);
+  }, [mapData, selectedBorough, onSelectZcta]);
 
   useEffect(() => {
     if (!containerRef.current || !selectedZcta || !haitianZctaData) return;
@@ -410,43 +423,35 @@ export default function NYCMapCore({
     });
   }, [selectedZcta, haitianZctaData]);
 
-  useEffect(() => {
-    if (!containerRef.current || !onSelectZcta) return;
-    const container = containerRef.current;
+  const mapStatus = useMemo(() => {
+    const feature = selectedZcta
+      ? haitianZctaData?.features.find((f) => String(f.properties?.zcta) === selectedZcta)
+      : null;
+    const props = feature?.properties;
+    const activeTier = props
+      ? tierLabel(getActiveNeedFromProperties(props, needScoreMode).needTier)
+      : null;
+    const label = props
+      ? parseModzctaLabel(String(props.label ?? ""), String(props.borough ?? ""))
+      : null;
 
-    import("plotly.js-dist-min").then((PlotlyModule) => {
-      const Plotly = (PlotlyModule.default || PlotlyModule) as unknown as {
-        on: (el: HTMLElement, event: string, handler: (data: unknown) => void) => void;
-        removeAllListeners: (el: HTMLElement, event: string) => void;
-      };
-      const onClick = (data: unknown) => {
-        handlePlotlyClick(data as { points?: Array<{ location?: string }> });
-      };
-      Plotly.on(container, "plotly_click", onClick);
+    return getMapStatusLines({
+      selectedZcta,
+      selectedLabel: label,
+      needScoreMode,
+      loadingHaitianZcta,
+      activeNeedTier: activeTier,
     });
-
-    return () => {
-      import("plotly.js-dist-min").then((PlotlyModule) => {
-        const Plotly = (PlotlyModule.default || PlotlyModule) as unknown as {
-          removeAllListeners: (el: HTMLElement, event: string) => void;
-        };
-        Plotly.removeAllListeners(container, "plotly_click");
-      });
-    };
-  }, [handlePlotlyClick, onSelectZcta]);
+  }, [selectedZcta, haitianZctaData, needScoreMode, loadingHaitianZcta]);
 
   return (
     <div className={className ?? "relative h-full w-full"}>
       <div ref={containerRef} className="absolute inset-0 h-full w-full bg-zinc-950" />
 
-      <div className="pointer-events-none absolute right-3 bottom-3 z-10 max-w-[min(100%-1.5rem,320px)] rounded-lg border border-zinc-800 bg-zinc-950/95 px-3 py-2 text-xs text-zinc-300 shadow-xl backdrop-blur-md">
-        <p className="font-semibold text-zinc-100">Haitian Educational Equity Map</p>
-        <p className="mt-0.5 leading-snug text-zinc-400">
-          Click a ZIP to explore Haitian population density and educational need by neighborhood.
-        </p>
-        <p className="mt-1 text-[10px] text-zinc-600">
-          ACS 2022 estimates · ZCTA boundaries (MODZCTA)
-        </p>
+      <div className="pointer-events-none absolute right-3 bottom-3 z-10 max-w-[min(100%-1.5rem,320px)] rounded-lg border border-zinc-800 bg-zinc-950/95 px-3 py-2.5 shadow-xl backdrop-blur-md">
+        <p className="text-sm font-semibold text-zinc-100">{mapStatus.title}</p>
+        <p className="mt-0.5 text-caption leading-snug text-zinc-400">{mapStatus.body}</p>
+        <p className="mt-1.5 text-caption text-zinc-500">{mapStatus.footnote}</p>
       </div>
     </div>
   );

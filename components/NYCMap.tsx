@@ -6,7 +6,7 @@ import type { NYCMapCoreProps } from "./NYCMapCore";
 const NYCMapCore = dynamic(() => import("./NYCMapCore"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full min-h-[100vh] w-full items-center justify-center bg-zinc-100 text-zinc-600">
+    <div className="flex h-full w-full items-center justify-center bg-zinc-100 text-zinc-600">
       Loading map…
     </div>
   ),

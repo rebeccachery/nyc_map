@@ -146,10 +146,4 @@ export const HAITIAN_COLORSCALE: [number, string][] = [
   [1, "rgba(234, 88, 12, 0.9)"],
 ];
 
-export function formatPct(value: number): string {
-  return `${value.toFixed(1)}%`;
-}
-
-export function formatScore(value: number): string {
-  return value.toFixed(1);
-}
+export { formatPct, formatScore } from "@/lib/format";

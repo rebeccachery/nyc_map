@@ -1,9 +1,5 @@
-import CommuteApp from "@/components/CommuteApp";
+import MetroLanding from "@/components/MetroLanding";
 
 export default function HomePage() {
-  return (
-    <main className="h-screen w-full">
-      <CommuteApp />
-    </main>
-  );
+  return <MetroLanding />;
 }
