@@ -44,16 +44,33 @@ export function buildZctaHoverText(props: ZctaHoverProps, mode: NeedScoreMode): 
 
 export function buildSchoolHoverText(props: Record<string, unknown>): string {
   const gradRate = parseFloat(String(props.graduation_rate ?? 0)) || 0;
-  const gradPercent = props.graduation_rate ? `${Math.round(gradRate * 100)}%` : "N/A";
+  const hasGradRate = props.graduation_rate !== undefined && props.graduation_rate !== null;
+  const gradPercent = hasGradRate ? `${Math.round(gradRate * 100)}%` : "N/A";
   const gradColor = gradRate < 0.6 ? "#ef4444" : gradRate < 0.8 ? "#f59e0b" : "#10b981";
 
-  return (
-    `<b>${props.school_name}</b><br>` +
-    `Neighborhood&nbsp;&nbsp;<b>${props.neighborhood || "N/A"}</b><br>` +
-    `Graduation rate&nbsp;<span style="color:${gradColor}"><b>${gradPercent}</b></span><br>` +
-    `Safety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.pct_stu_safe ? `${Math.round(parseFloat(String(props.pct_stu_safe)) * 100)}%` : "N/A"}</b><br>` +
-    `Attendance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.attendance_rate ? `${Math.round(parseFloat(String(props.attendance_rate)) * 100)}%` : "N/A"}</b>`
-  );
+  const lines = [`<b>${props.school_name}</b>`];
+
+  if (props.neighborhood) {
+    lines.push(`Neighborhood&nbsp;&nbsp;<b>${props.neighborhood}</b>`);
+  } else if (props.county) {
+    lines.push(`County&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.county}</b>`);
+  }
+
+  if (props.primary_address_line_1) {
+    lines.push(`Address&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.primary_address_line_1}</b>`);
+  }
+
+  if (hasGradRate) {
+    lines.push(
+      `Graduation rate&nbsp;<span style="color:${gradColor}"><b>${gradPercent}</b></span>`,
+      `Safety&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.pct_stu_safe ? `${Math.round(parseFloat(String(props.pct_stu_safe)) * 100)}%` : "N/A"}</b>`,
+      `Attendance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.attendance_rate ? `${Math.round(parseFloat(String(props.attendance_rate)) * 100)}%` : "N/A"}</b>`
+    );
+  } else if (props.grades || props.school_type) {
+    lines.push(`Grades&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${props.grades || props.school_type}</b>`);
+  }
+
+  return lines.join("<br>");
 }
 
 export function buildLibraryHoverText(props: Record<string, unknown>): string {
@@ -64,8 +81,8 @@ export function buildLibraryHoverText(props: Record<string, unknown>): string {
   );
 }
 
-export function buildBoroughHoverText(item: {
-  boroughName: string;
+export function buildRegionHoverText(item: {
+  regionName: string;
   haitianPop: number;
   speakers: number;
   limitedEnglish: number;
@@ -73,7 +90,7 @@ export function buildBoroughHoverText(item: {
   pctNoHS: number;
 }): string {
   return (
-    `<b>${item.boroughName}</b><br>` +
+    `<b>${item.regionName}</b><br>` +
     `Haitian ancestry&nbsp;&nbsp;&nbsp;&nbsp;<b>${formatCount(item.haitianPop)}</b><br>` +
     `Creole speakers&nbsp;&nbsp;&nbsp;&nbsp;<b>${formatCount(item.speakers)}</b><br>` +
     `Limited English&nbsp;&nbsp;&nbsp;&nbsp;<b>${formatCount(item.limitedEnglish)}</b><br>` +
@@ -82,12 +99,26 @@ export function buildBoroughHoverText(item: {
   );
 }
 
+/** @deprecated Use buildRegionHoverText */
+export function buildBoroughHoverText(item: {
+  boroughName: string;
+  haitianPop: number;
+  speakers: number;
+  limitedEnglish: number;
+  pctNoInternet: number;
+  pctNoHS: number;
+}): string {
+  return buildRegionHoverText({ ...item, regionName: item.boroughName });
+}
+
 export type MapStatusProps = {
   selectedZcta: string | null;
   selectedLabel?: ParsedZipLabel | null;
   needScoreMode: NeedScoreMode;
   loadingHaitianZcta?: boolean;
   activeNeedTier?: string | null;
+  metroLabel?: string;
+  boundaryFootnote?: string;
 };
 
 export function getMapStatusLines({
@@ -96,11 +127,13 @@ export function getMapStatusLines({
   needScoreMode,
   loadingHaitianZcta,
   activeNeedTier,
+  metroLabel = "this metro",
+  boundaryFootnote = "U.S. Census ACS 2022 · ZIP code areas",
 }: MapStatusProps): { title: string; body: string; footnote: string } {
   if (loadingHaitianZcta) {
     return {
       title: "Loading map data",
-      body: "Fetching Census estimates for NYC ZIP codes…",
+      body: `Fetching Census estimates for ${metroLabel} ZIP codes…`,
       footnote: "This may take up to 30 seconds on first load.",
     };
   }
@@ -109,13 +142,13 @@ export function getMapStatusLines({
     return {
       title: selectedLabel?.display ?? `ZIP ${selectedZcta}`,
       body: `${activeNeedTier} · ${needScoreMode === "education" ? "Educational need view" : "Population view"}`,
-      footnote: "U.S. Census ACS 2022 · ZIP code areas (MODZCTA)",
+      footnote: boundaryFootnote,
     };
   }
 
   return {
     title: "Haitian Educational Equity Map",
     body: "Click a ZIP code on the map or search in the sidebar to explore neighborhood details.",
-    footnote: "U.S. Census ACS 2022 · ZIP code areas (MODZCTA)",
+    footnote: boundaryFootnote,
   };
 }

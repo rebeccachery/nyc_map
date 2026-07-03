@@ -1,170 +1,78 @@
 import { NextResponse } from "next/server";
-import type { Feature, FeatureCollection } from "geojson";
-import {
-  CENSUS_VARIABLES,
-  getCensusApiKey,
-  parseCensusZctaRows,
-} from "@/lib/census";
-import {
-  classifyNeedTier,
-  computeCompositeNeedScore,
-  computeTierBreaks,
-  hasReliableData,
-  tierToColorValue,
-  type ZctaNeedInput,
-} from "@/lib/haitianNeed";
+import type { Feature } from "geojson";
+import { fetchModzctaBoundaries, fetchTigerZctaBoundaries } from "@/lib/boundaries";
+import { fetchCensusZctaData } from "@/lib/census";
+import { enrichHaitianZctaFeatures } from "@/lib/enrichHaitianZcta";
+import { getMiamiMsaZctas, zctaToMiamiCounty } from "@/lib/miamiZctas";
+import { parseMetroId } from "@/lib/metroApi";
 import { zctaToBorough } from "@/lib/zctaBorough";
 
 export const dynamic = "force-dynamic";
 
-const MODZCTA_URL =
-  "https://data.cityofnewyork.us/resource/pri4-ifjk.geojson?$limit=500";
+async function buildNycHaitianZcta() {
+  const [boundaries, censusByZcta] = await Promise.all([
+    fetchModzctaBoundaries(),
+    fetchCensusZctaData(),
+  ]);
 
-async function fetchModzctaBoundaries(): Promise<FeatureCollection> {
-  const token = process.env.NEXT_PUBLIC_NYC_SODA_APP_TOKEN;
-  const headers: Record<string, string> = {};
-  if (token) headers["X-App-Token"] = token;
+  const rows = [];
+  for (const feature of boundaries.features) {
+    const zcta = String(feature.properties?.modzcta ?? "").padStart(5, "0");
+    const census = censusByZcta.get(zcta);
+    if (!zcta || !census || census.totalPop <= 0) continue;
 
-  const res = await fetch(MODZCTA_URL, {
-    headers,
-    next: { revalidate: 86400 },
-  });
-  if (!res.ok) {
-    throw new Error(`MODZCTA fetch returned status ${res.status}`);
+    rows.push({
+      zcta,
+      feature: feature as Feature,
+      census,
+      regionName: zctaToBorough(zcta),
+    });
   }
-  return res.json();
+
+  return enrichHaitianZctaFeatures(rows);
 }
 
-async function fetchCensusZctaData() {
-  const variables = ["NAME", ...CENSUS_VARIABLES].join(",");
-  const url = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:*&key=${getCensusApiKey()}`;
+async function buildMiamiHaitianZcta() {
+  const miamiZctas = getMiamiMsaZctas();
+  const zctaCodes = miamiZctas.map((entry) => entry.zcta);
 
-  const res = await fetch(url, { next: { revalidate: 3600 } });
-  if (!res.ok) {
-    throw new Error(`Census API returned status ${res.status}`);
+  const [boundaries, censusByZcta] = await Promise.all([
+    fetchTigerZctaBoundaries(zctaCodes),
+    fetchCensusZctaData(),
+  ]);
+
+  const boundaryByZcta = new Map<string, Feature>();
+  for (const feature of boundaries.features) {
+    const zcta = String(feature.properties?.ZCTA5 ?? feature.properties?.zcta ?? "").padStart(
+      5,
+      "0"
+    );
+    if (zcta) boundaryByZcta.set(zcta, feature as Feature);
   }
-  const data: string[][] = await res.json();
-  return parseCensusZctaRows(data);
+
+  const rows = [];
+  for (const entry of miamiZctas) {
+    const feature = boundaryByZcta.get(entry.zcta);
+    const census = censusByZcta.get(entry.zcta);
+    if (!feature || !census || census.totalPop <= 0) continue;
+
+    rows.push({
+      zcta: entry.zcta,
+      feature,
+      census,
+      regionName: entry.county || zctaToMiamiCounty(entry.zcta),
+    });
+  }
+
+  return enrichHaitianZctaFeatures(rows);
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const [boundaries, censusByZcta] = await Promise.all([
-      fetchModzctaBoundaries(),
-      fetchCensusZctaData(),
-    ]);
+    const metro = parseMetroId(new URL(request.url).searchParams.get("metro"));
+    const data = metro === "miami" ? await buildMiamiHaitianZcta() : await buildNycHaitianZcta();
 
-    type EnrichedZcta = ZctaNeedInput & {
-      modzcta: string;
-      feature: Feature;
-      census: NonNullable<ReturnType<typeof censusByZcta.get>>;
-      haitianPopPct: number;
-    };
-
-    const enriched: EnrichedZcta[] = [];
-
-    for (const feature of boundaries.features) {
-      const modzcta = String(feature.properties?.modzcta ?? "").padStart(5, "0");
-      const census = censusByZcta.get(modzcta);
-      if (!modzcta || !census || census.totalPop <= 0) continue;
-
-      const haitianPopPct =
-        census.totalPop > 0 ? (census.haitianPop / census.totalPop) * 100 : 0;
-
-      enriched.push({
-        modzcta,
-        feature,
-        census,
-        haitianPopPct,
-        haitianPop: census.haitianPop,
-        totalPop: census.totalPop,
-        pctNoInternet: census.pctNoInternet,
-        pctNoHS: census.pctNoHS,
-      });
-    }
-
-    const reliable = enriched.filter((z) => hasReliableData(z.haitianPop, z.totalPop));
-
-    const populationTierBreaks = computeTierBreaks(
-      reliable.map((z) => z.haitianPopPct)
-    );
-
-    const compositeScores = reliable.map((z) =>
-      computeCompositeNeedScore(z, reliable)
-    );
-    const educationTierBreaks = computeTierBreaks(compositeScores);
-
-    let totalHaitian = 0;
-    let pctSum = 0;
-    let educationScoreSum = 0;
-
-    const features: Feature[] = enriched.map((row) => {
-      const educationNeedScore = hasReliableData(row.haitianPop, row.totalPop)
-        ? computeCompositeNeedScore(row, reliable)
-        : 0;
-
-      const populationNeedTier = classifyNeedTier(
-        row.haitianPopPct,
-        row.haitianPop,
-        row.totalPop,
-        populationTierBreaks
-      );
-      const educationNeedTier = classifyNeedTier(
-        educationNeedScore,
-        row.haitianPop,
-        row.totalPop,
-        educationTierBreaks
-      );
-
-      totalHaitian += row.census.haitianPop;
-      if (populationNeedTier !== "insufficient_data") {
-        pctSum += row.haitianPopPct;
-        educationScoreSum += educationNeedScore;
-      }
-
-      return {
-        ...row.feature,
-        id: row.modzcta,
-        properties: {
-          ...row.feature.properties,
-          zcta: row.modzcta,
-          borough: zctaToBorough(row.modzcta),
-          haitianPop: row.census.haitianPop,
-          totalPop: row.census.totalPop,
-          haitianPopPct: row.haitianPopPct,
-          speakers: row.census.speakers,
-          limitedEnglish: row.census.limitedEnglish,
-          pctNoInternet: row.census.pctNoInternet,
-          pctNoHS: row.census.pctNoHS,
-          educationNeedScore,
-          populationNeedTier,
-          educationNeedTier,
-          populationColorValue: tierToColorValue(populationNeedTier),
-          educationColorValue: tierToColorValue(educationNeedTier),
-          needTier: populationNeedTier,
-          colorValue: tierToColorValue(populationNeedTier),
-        },
-      } satisfies Feature;
-    });
-
-    const validCount = reliable.length;
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        features: { type: "FeatureCollection", features } satisfies FeatureCollection,
-        stats: {
-          populationTierBreaks,
-          educationTierBreaks,
-          citywide: {
-            totalHaitian,
-            avgPct: validCount > 0 ? pctSum / validCount : 0,
-            avgEducationScore: validCount > 0 ? educationScoreSum / validCount : 0,
-            zctaCount: features.length,
-          },
-        },
-      },
-    });
+    return NextResponse.json({ success: true, data });
   } catch (error: unknown) {
     console.error("Error in haitian-zcta API route:", error);
     return NextResponse.json(

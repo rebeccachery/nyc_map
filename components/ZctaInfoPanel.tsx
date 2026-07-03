@@ -26,6 +26,7 @@ export type ZctaProperties = {
   zcta: string;
   label?: string;
   borough?: string;
+  county?: string;
   haitianPop: number;
   totalPop: number;
   haitianPopPct: number;
@@ -83,7 +84,10 @@ export default function ZctaInfoPanel({
 
   const zipLabel = useMemo(() => {
     if (!selected) return null;
-    return parseModzctaLabel(selected.label ?? selected.zcta, selected.borough);
+    return parseModzctaLabel(
+      selected.label ?? selected.zcta,
+      selected.borough ?? selected.county ?? ""
+    );
   }, [selected]);
 
   const nearby = useMemo(() => {

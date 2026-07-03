@@ -40,6 +40,18 @@ export type ParsedZctaRow = {
   pctNoHS: number;
 };
 
+export async function fetchCensusZctaData(): Promise<Map<string, ParsedZctaRow>> {
+  const variables = ["NAME", ...CENSUS_VARIABLES].join(",");
+  const url = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:*&key=${getCensusApiKey()}`;
+
+  const res = await fetch(url, { next: { revalidate: 3600 } });
+  if (!res.ok) {
+    throw new Error(`Census API returned status ${res.status}`);
+  }
+  const data: string[][] = await res.json();
+  return parseCensusZctaRows(data);
+}
+
 export function parseCensusZctaRows(data: string[][]): Map<string, ParsedZctaRow> {
   const headers = data[0];
   const zctaIdx = headers.indexOf("zip code tabulation area");

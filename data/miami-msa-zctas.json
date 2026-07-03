@@ -1,0 +1,740 @@
+{
+  "zctas": [
+    {
+      "zcta": "33004",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33009",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33010",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33012",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33013",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33014",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33015",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33016",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33018",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33019",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33020",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33021",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33022",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33023",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33024",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33025",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33026",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33027",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33028",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33029",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33030",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33031",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33032",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33033",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33035",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33039",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33054",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33055",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33056",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33060",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33062",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33063",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33064",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33065",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33066",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33067",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33068",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33069",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33071",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33073",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33076",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33101",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33109",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33122",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33125",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33126",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33127",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33128",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33129",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33130",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33131",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33132",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33133",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33134",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33135",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33136",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33137",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33138",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33139",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33140",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33141",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33142",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33143",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33144",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33145",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33146",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33147",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33149",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33150",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33154",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33155",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33156",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33157",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33158",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33160",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33161",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33162",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33165",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33166",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33167",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33168",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33169",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33170",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33172",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33173",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33174",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33175",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33176",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33177",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33178",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33179",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33180",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33181",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33182",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33183",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33184",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33185",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33186",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33187",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33189",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33190",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33193",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33194",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33196",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33301",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33304",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33305",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33306",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33308",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33309",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33311",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33312",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33313",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33314",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33315",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33316",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33317",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33319",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33321",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33322",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33323",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33324",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33325",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33326",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33327",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33328",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33330",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33331",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33332",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33334",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33351",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33388",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33401",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33403",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33404",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33405",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33406",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33407",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33408",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33409",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33410",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33411",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33412",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33413",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33414",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33415",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33417",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33418",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33426",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33428",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33430",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33431",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33432",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33433",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33434",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33435",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33436",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33437",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33438",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33441",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33442",
+      "county": "Broward"
+    },
+    {
+      "zcta": "33444",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33445",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33446",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33449",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33460",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33461",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33462",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33463",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33467",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33470",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33472",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33473",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33476",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33477",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33478",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33480",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33483",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33484",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33486",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33487",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33493",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33496",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33498",
+      "county": "Palm Beach"
+    }
+  ]
+}

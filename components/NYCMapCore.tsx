@@ -6,14 +6,16 @@ import { HAITIAN_COLORSCALE, getActiveNeedFromProperties, tierLabel, type NeedSc
 import { getFeatureCentroid } from "@/lib/geo";
 import { parseModzctaLabel } from "@/lib/format";
 import {
-  buildBoroughHoverText,
   buildLibraryHoverText,
+  buildRegionHoverText,
   buildSchoolHoverText,
   buildZctaHoverText,
   getMapStatusLines,
 } from "@/lib/mapHoverText";
+import { getRegionCenter, type MetroConfig } from "@/lib/metroRegistry";
 
 export type NYCMapCoreProps = {
+  metro: MetroConfig;
   haitianPopData?: any[];
   haitianZctaData?: FeatureCollection;
   schoolsData?: FeatureCollection;
@@ -29,14 +31,6 @@ export type NYCMapCoreProps = {
   onSelectZcta?: (zcta: string | null) => void;
   loadingHaitianZcta?: boolean;
   className?: string;
-};
-
-const boroughCenters: Record<string, { lat: number; lon: number; zoom: number }> = {
-  Brooklyn: { lat: 40.6501, lon: -73.9496, zoom: 11.2 },
-  Queens: { lat: 40.7282, lon: -73.7949, zoom: 11.2 },
-  Manhattan: { lat: 40.7831, lon: -73.9712, zoom: 11.8 },
-  Bronx: { lat: 40.8448, lon: -73.8648, zoom: 11.8 },
-  "Staten Island": { lat: 40.5795, lon: -74.1502, zoom: 11.2 },
 };
 
 function applyOpacityToColorscale(
@@ -81,6 +75,7 @@ function bindPlotlyClick(
 }
 
 export default function NYCMapCore({
+  metro,
   haitianPopData = [],
   haitianZctaData,
   schoolsData,
@@ -101,13 +96,22 @@ export default function NYCMapCore({
   const unbindClickRef = useRef<(() => void) | null>(null);
   const handlePlotlyClickRef = useRef<(data: PlotlyClickData) => void>(() => {});
 
+  const regionPropertyKey = metro.ui.regionPropertyKey;
+  const regionCenters = useMemo(
+    () =>
+      Object.fromEntries(
+        metro.regions.map((region) => [region.name, region.center])
+      ) as Record<string, { lat: number; lon: number; zoom: number }>,
+    [metro.regions]
+  );
+
   const filteredZctaFeatures = useMemo(() => {
     if (!haitianZctaData?.features.length) return [];
     if (!selectedBorough) return haitianZctaData.features;
     return haitianZctaData.features.filter(
-      (f) => f.properties?.borough === selectedBorough
+      (f) => f.properties?.[regionPropertyKey] === selectedBorough
     );
-  }, [haitianZctaData, selectedBorough]);
+  }, [haitianZctaData, regionPropertyKey, selectedBorough]);
 
   const heatGeoJson = useMemo((): FeatureCollection | undefined => {
     if (!filteredZctaFeatures.length) return undefined;
@@ -194,22 +198,26 @@ export default function NYCMapCore({
       const bubbleSizes: number[] = [];
       const bubbleText: string[] = [];
 
-      const boroCenters: Record<string, { lat: number; lon: number }> = {
-        Brooklyn: { lat: 40.6501, lon: -73.9496 },
-        Queens: { lat: 40.7282, lon: -73.7949 },
-        Manhattan: { lat: 40.7831, lon: -73.9712 },
-        Bronx: { lat: 40.8448, lon: -73.8648 },
-        "Staten Island": { lat: 40.5795, lon: -74.1502 },
-      };
+      const bubbleCenters = regionCenters;
 
       haitianPopData.forEach((item) => {
-        const center = boroCenters[item.boroughName];
+        const regionName = String(item.boroughName ?? item.countyName ?? "");
+        const center = bubbleCenters[regionName];
         if (center) {
           bubbleLat.push(center.lat);
           bubbleLon.push(center.lon);
           const size = 15 + Math.sqrt(item.haitianPop) * 0.18;
           bubbleSizes.push(size);
-          bubbleText.push(buildBoroughHoverText(item));
+          bubbleText.push(
+            buildRegionHoverText({
+              regionName,
+              haitianPop: item.haitianPop,
+              speakers: item.speakers,
+              limitedEnglish: item.limitedEnglish,
+              pctNoInternet: item.pctNoInternet,
+              pctNoHS: item.pctNoHS,
+            })
+          );
         }
       });
 
@@ -226,7 +234,7 @@ export default function NYCMapCore({
             color: "rgba(249, 115, 22, 0.45)",
             line: { color: "rgba(234, 88, 12, 0.9)", width: 2.5 },
           },
-          name: "Haitian Pop Density (Borough)",
+          name: metro.ui.regionBubblesLabel,
           showlegend: true,
         });
       }
@@ -311,6 +319,8 @@ export default function NYCMapCore({
 
     return traces;
   }, [
+    metro,
+    regionCenters,
     haitianPopData,
     heatGeoJson,
     schoolsData,
@@ -346,18 +356,9 @@ export default function NYCMapCore({
         if (!isMounted) return;
         const Plotly = PlotlyModule.default || PlotlyModule;
 
-        const targetCenter =
-          selectedBorough && boroughCenters[selectedBorough]
-            ? {
-                lat: boroughCenters[selectedBorough].lat,
-                lon: boroughCenters[selectedBorough].lon,
-              }
-            : { lat: 40.7128, lon: -74.006 };
-
-        const targetZoom =
-          selectedBorough && boroughCenters[selectedBorough]
-            ? boroughCenters[selectedBorough].zoom
-            : 10;
+        const mapView = getRegionCenter(metro, selectedBorough);
+        const targetCenter = { lat: mapView.lat, lon: mapView.lon };
+        const targetZoom = mapView.zoom;
 
         const layout = {
           autosize: true,
@@ -401,7 +402,7 @@ export default function NYCMapCore({
       unbindClickRef.current?.();
       unbindClickRef.current = null;
     };
-  }, [mapData, selectedBorough, onSelectZcta]);
+  }, [mapData, metro.id, selectedBorough, onSelectZcta]);
 
   useEffect(() => {
     if (!containerRef.current || !selectedZcta || !haitianZctaData) return;
@@ -431,8 +432,9 @@ export default function NYCMapCore({
     const activeTier = props
       ? tierLabel(getActiveNeedFromProperties(props, needScoreMode).needTier)
       : null;
+    const regionName = String(props?.[regionPropertyKey] ?? props?.borough ?? "");
     const label = props
-      ? parseModzctaLabel(String(props.label ?? ""), String(props.borough ?? ""))
+      ? parseModzctaLabel(String(props.label ?? ""), regionName)
       : null;
 
     return getMapStatusLines({
@@ -441,8 +443,17 @@ export default function NYCMapCore({
       needScoreMode,
       loadingHaitianZcta,
       activeNeedTier: activeTier,
+      metroLabel: metro.label,
+      boundaryFootnote: metro.ui.boundaryFootnote,
     });
-  }, [selectedZcta, haitianZctaData, needScoreMode, loadingHaitianZcta]);
+  }, [
+    selectedZcta,
+    haitianZctaData,
+    needScoreMode,
+    loadingHaitianZcta,
+    metro,
+    regionPropertyKey,
+  ]);
 
   return (
     <div className={className ?? "relative h-full w-full"}>

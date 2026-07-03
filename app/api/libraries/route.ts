@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import type { Feature, FeatureCollection } from "geojson";
+import { fetchMiamiLibraries } from "@/lib/miamiOverlays";
+import { parseMetroId } from "@/lib/metroApi";
 
 export const dynamic = "force-dynamic";
 
@@ -21,49 +23,50 @@ type SocrataLibraryRow = {
   url?: string;
 };
 
-export async function GET() {
+async function fetchNycLibraries(): Promise<FeatureCollection> {
+  const url = `${BASE_URL}/${LIBRARIES_DATASET_ID}.json?$limit=500`;
+
+  const token = process.env.NEXT_PUBLIC_NYC_SODA_APP_TOKEN;
+  const headers: Record<string, string> = {};
+  if (token) headers["X-App-Token"] = token;
+
+  const res = await fetch(url, { headers, next: { revalidate: 3600 } });
+  if (!res.ok) {
+    throw new Error(`NYC Open Data returned status ${res.status}`);
+  }
+
+  const rows = (await res.json()) as SocrataLibraryRow[];
+  const features: Feature[] = [];
+
+  for (const row of rows) {
+    if (row.the_geom?.coordinates) {
+      features.push({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: row.the_geom.coordinates,
+        },
+        properties: {
+          name: row.name || "Unknown Library Branch",
+          streetAddress: `${row.housenum || ""} ${row.streetname || ""}`.trim(),
+          city: row.city || "",
+          zip: row.zip || "",
+          system: row.system || "Public Library",
+          boroCode: row.borocode || "",
+          url: row.url || "",
+        },
+      });
+    }
+  }
+
+  return { type: "FeatureCollection", features };
+}
+
+export async function GET(request: Request) {
   try {
-    const url = `${BASE_URL}/${LIBRARIES_DATASET_ID}.json?$limit=500`;
-    
-    const token = process.env.NEXT_PUBLIC_NYC_SODA_APP_TOKEN;
-    const headers: Record<string, string> = {};
-    if (token) {
-      headers["X-App-Token"] = token;
-    }
-
-    const res = await fetch(url, { headers, next: { revalidate: 3600 } });
-    if (!res.ok) {
-      throw new Error(`NYC Open Data returned status ${res.status}`);
-    }
-
-    const rows = (await res.json()) as SocrataLibraryRow[];
-    
-    const features: Feature[] = [];
-    for (const row of rows) {
-      if (row.the_geom && row.the_geom.coordinates) {
-        features.push({
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: row.the_geom.coordinates,
-          },
-          properties: {
-            name: row.name || "Unknown Library Branch",
-            streetAddress: `${row.housenum || ""} ${row.streetname || ""}`.trim(),
-            city: row.city || "",
-            zip: row.zip || "",
-            system: row.system || "Public Library",
-            boroCode: row.borocode || "",
-            url: row.url || "",
-          },
-        });
-      }
-    }
-
-    const featureCollection: FeatureCollection = {
-      type: "FeatureCollection",
-      features,
-    };
+    const metro = parseMetroId(new URL(request.url).searchParams.get("metro"));
+    const featureCollection =
+      metro === "miami" ? await fetchMiamiLibraries() : await fetchNycLibraries();
 
     return NextResponse.json({ success: true, data: featureCollection });
   } catch (error: unknown) {

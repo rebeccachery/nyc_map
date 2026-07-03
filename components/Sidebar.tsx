@@ -132,11 +132,6 @@ export default function Sidebar({
 
   return (
     <aside className="absolute left-4 top-4 z-20 flex max-h-[calc(100%-2rem)] w-[360px] max-w-[calc(100%-2rem)] flex-col overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-950/95 p-4 text-zinc-100 shadow-2xl backdrop-blur-xl scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-      {metro.status === "coming_soon" && (
-        <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
-          {metro.label} map data is coming soon. Layer controls will activate when data is available.
-        </div>
-      )}
 
       {Object.keys(errors).length > 0 && (
         <div className="mt-3 space-y-1.5" role="alert">
@@ -414,8 +409,12 @@ export default function Sidebar({
 
           <label className="flex cursor-pointer items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
             <div className="text-left">
-              <span className="text-xs font-semibold text-zinc-200">Public high schools</span>
-              <p className="text-caption">Graduation rate, safety, and ESL programs</p>
+              <span className="text-xs font-semibold text-zinc-200">Public schools</span>
+              <p className="text-caption">
+                {metro.overlays.schools.hasPerformanceMetrics
+                  ? "Graduation rate, safety, and ESL programs"
+                  : "School locations across the metro area"}
+              </p>
             </div>
             <input
               type="checkbox"

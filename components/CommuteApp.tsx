@@ -3,14 +3,10 @@
 import AppShell from "@/components/AppShell";
 import NYCMap from "@/components/NYCMap";
 import Sidebar, { type SidebarFilters } from "@/components/Sidebar";
-import { setLastMetroId } from "@/lib/metroPreferences";
-import {
-  getMetroConfig,
-  isMetroLive,
-  type MetroId,
-} from "@/lib/metroRegistry";
 import type { HaitianZctaApiResponse, LayerErrors } from "@/lib/haitianZctaTypes";
-import Link from "next/link";
+import { metroApiQuery } from "@/lib/metroApi";
+import { setLastMetroId } from "@/lib/metroPreferences";
+import { getMetroConfig, type MetroId } from "@/lib/metroRegistry";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FeatureCollection } from "geojson";
 
@@ -18,13 +14,8 @@ type CommuteAppProps = {
   metroId: MetroId;
 };
 
-function metroApiQuery(metroId: MetroId): string {
-  return `?metro=${metroId}`;
-}
-
 export default function CommuteApp({ metroId }: CommuteAppProps) {
   const metro = useMemo(() => getMetroConfig(metroId)!, [metroId]);
-  const isLive = isMetroLive(metro);
 
   const [filters, setFilters] = useState<SidebarFilters>({
     showHaitianHeat: true,
@@ -76,8 +67,6 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
   }, [metroId]);
 
   useEffect(() => {
-    if (!isLive) return;
-
     let active = true;
     setLoadingDemographics(true);
     setLayerError("demographics", null);
@@ -98,11 +87,9 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
     return () => {
       active = false;
     };
-  }, [isLive, metroId, setLayerError]);
+  }, [metroId, setLayerError]);
 
   useEffect(() => {
-    if (!isLive) return;
-
     let active = true;
     setLoadingHaitianZcta(true);
     setLayerError("haitianZcta", null);
@@ -128,11 +115,9 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
     return () => {
       active = false;
     };
-  }, [isLive, metroId, setLayerError]);
+  }, [metroId, setLayerError]);
 
   useEffect(() => {
-    if (!isLive) return;
-
     let active = true;
     setLoadingSchools(true);
     setLayerError("schools", null);
@@ -153,11 +138,9 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
     return () => {
       active = false;
     };
-  }, [isLive, metroId, setLayerError]);
+  }, [metroId, setLayerError]);
 
   useEffect(() => {
-    if (!isLive) return;
-
     let active = true;
     setLoadingLibraries(true);
     setLayerError("libraries", null);
@@ -178,7 +161,7 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
     return () => {
       active = false;
     };
-  }, [isLive, metroId, setLayerError]);
+  }, [metroId, setLayerError]);
 
   const handleSelectZcta = useCallback((zcta: string | null) => {
     setSelectedZcta(zcta);
@@ -199,43 +182,23 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
   return (
     <AppShell metro={metro}>
       <div className="relative h-full w-full overflow-hidden bg-zinc-950">
-        {isLive ? (
-          <NYCMap
-            haitianPopData={haitianPopData}
-            haitianZctaData={haitianZctaData}
-            schoolsData={schoolsData}
-            librariesData={librariesData}
-            showHaitianHeat={filters.showHaitianHeat}
-            showHaitianBubbles={filters.showHaitianBubbles}
-            showSchools={filters.showSchools}
-            showLibraries={filters.showLibraries}
-            haitianHeatOpacity={filters.haitianHeatOpacity}
-            needScoreMode={filters.needScoreMode}
-            selectedBorough={selectedBorough}
-            selectedZcta={selectedZcta}
-            onSelectZcta={handleSelectZcta}
-            loadingHaitianZcta={loadingHaitianZcta}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-zinc-950 px-6">
-            <div className="max-w-md rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 text-center">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-orange-400">
-                Coming soon
-              </p>
-              <h2 className="mt-2 text-xl font-bold text-zinc-100">{metro.label}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-                Map layers for this metro are being built. Switch to New York City to explore the
-                live map, or check back soon for Miami-Dade and Broward County data.
-              </p>
-              <Link
-                href="/map/nyc"
-                className="mt-6 inline-flex rounded-lg border border-orange-500/40 bg-orange-500/10 px-4 py-2 text-xs font-semibold text-orange-300 transition hover:bg-orange-500/20"
-              >
-                Open New York City map
-              </Link>
-            </div>
-          </div>
-        )}
+        <NYCMap
+          metro={metro}
+          haitianPopData={haitianPopData}
+          haitianZctaData={haitianZctaData}
+          schoolsData={schoolsData}
+          librariesData={librariesData}
+          showHaitianHeat={filters.showHaitianHeat}
+          showHaitianBubbles={filters.showHaitianBubbles}
+          showSchools={filters.showSchools}
+          showLibraries={filters.showLibraries}
+          haitianHeatOpacity={filters.haitianHeatOpacity}
+          needScoreMode={filters.needScoreMode}
+          selectedBorough={selectedBorough}
+          selectedZcta={selectedZcta}
+          onSelectZcta={handleSelectZcta}
+          loadingHaitianZcta={loadingHaitianZcta}
+        />
 
         <Sidebar
           metro={metro}

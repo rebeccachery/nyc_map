@@ -19,25 +19,6 @@ function segmentClass(isActive: boolean, isDisabled: boolean): string {
 }
 
 function MetroSegment({ metro, isActive }: { metro: MetroConfig; isActive: boolean }) {
-  const isDisabled = metro.status === "coming_soon";
-
-  if (isDisabled) {
-    return (
-      <span
-        role="tab"
-        aria-selected={false}
-        aria-disabled="true"
-        title={`${metro.label} — coming soon`}
-        className={`flex-1 rounded-lg px-3 py-2 text-center text-xs font-semibold transition ${segmentClass(false, true)}`}
-      >
-        {metro.shortLabel}
-        <span className="mt-0.5 block text-[10px] font-normal uppercase tracking-wide text-zinc-600">
-          Soon
-        </span>
-      </span>
-    );
-  }
-
   return (
     <Link
       href={`/map/${metro.id}`}

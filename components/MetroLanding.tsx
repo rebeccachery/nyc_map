@@ -6,16 +6,8 @@ import { getLastMetroId, setLastMetroId } from "@/lib/metroPreferences";
 import { METROS, type MetroId } from "@/lib/metroRegistry";
 
 function MetroCard({ metro }: { metro: (typeof METROS)[number] }) {
-  const isLive = metro.status === "live";
-
   const inner = (
-    <div
-      className={`group flex h-full flex-col rounded-2xl border p-5 transition ${
-        isLive
-          ? "border-zinc-800 bg-zinc-900/40 hover:border-orange-500/40 hover:bg-zinc-900/70"
-          : "cursor-not-allowed border-zinc-800/60 bg-zinc-900/20 opacity-70"
-      }`}
-    >
+    <div className="group flex h-full flex-col rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 transition hover:border-orange-500/40 hover:bg-zinc-900/70">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-zinc-100">{metro.label}</h2>
@@ -23,24 +15,15 @@ function MetroCard({ metro }: { metro: (typeof METROS)[number] }) {
             <p className="mt-1 text-xs text-zinc-500">{metro.haitianAncestryHint}</p>
           )}
         </div>
-        {!isLive && (
-          <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-            Coming soon
-          </span>
-        )}
       </div>
       <p className="mt-3 flex-1 text-xs leading-relaxed text-zinc-400">{metro.ui.tagline}</p>
       <p className="mt-4 text-[11px] font-medium text-zinc-500">
         {metro.regions.length} {metro.ui.regionLabel}
         {metro.regions.length === 1 ? "" : "s"}
-        {isLive ? (
-          <span className="text-orange-400 group-hover:text-orange-300"> · Open map →</span>
-        ) : null}
+        <span className="text-orange-400 group-hover:text-orange-300"> · Open map →</span>
       </p>
     </div>
   );
-
-  if (!isLive) return inner;
 
   return (
     <Link
