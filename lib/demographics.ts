@@ -1,4 +1,4 @@
-import { getCensusApiKey } from "@/lib/census";
+import { censusKeyParam } from "@/lib/census";
 import type { DemographicsCountyConfig } from "@/lib/metroApi";
 
 const DEMOGRAPHIC_VARIABLES = [
@@ -39,7 +39,7 @@ export type DemographicsRow = {
 export async function fetchCountyDemographics(
   config: DemographicsCountyConfig
 ): Promise<DemographicsRow[]> {
-  const url = `https://api.census.gov/data/2022/acs/acs5?get=NAME,${DEMOGRAPHIC_VARIABLES}&for=county:*&in=state:${config.stateFips}&key=${getCensusApiKey()}`;
+  const url = `https://api.census.gov/data/2022/acs/acs5?get=NAME,${DEMOGRAPHIC_VARIABLES}&for=county:*&in=state:${config.stateFips}${censusKeyParam()}`;
 
   const res = await fetch(url, { next: { revalidate: 3600 } });
   if (!res.ok) {

@@ -23,12 +23,18 @@ export const CENSUS_VARIABLES = [
   "B15003_016E",
 ] as const;
 
-export function getCensusApiKey(): string {
-  return (
-    process.env.CENSUS_API_KEY ??
-    "a6786f1b1d948dbb737d8f51dc71ee31df5ea8b4"
-  );
+export function getCensusApiKey(): string | undefined {
+  const key = process.env.CENSUS_API_KEY?.trim();
+  return key ? key : undefined;
 }
+
+/** `&key=...` when a key is configured; the Census API also works keyless at low rate limits. */
+export function censusKeyParam(): string {
+  const key = getCensusApiKey();
+  return key ? `&key=${encodeURIComponent(key)}` : "";
+}
+
+export const CENSUS_ACS_ZCTA_URL = "https://api.census.gov/data/2022/acs/acs5";
 
 export type ParsedZctaRow = {
   zcta: string;
@@ -42,7 +48,7 @@ export type ParsedZctaRow = {
 
 export async function fetchCensusZctaData(): Promise<Map<string, ParsedZctaRow>> {
   const variables = ["NAME", ...CENSUS_VARIABLES].join(",");
-  const url = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:*&key=${getCensusApiKey()}`;
+  const url = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:*${censusKeyParam()}`;
 
   const res = await fetch(url, { next: { revalidate: 3600 } });
   if (!res.ok) {

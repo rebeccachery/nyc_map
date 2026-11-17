@@ -7,18 +7,32 @@
     "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "snapshot": "tsx scripts/snapshot.ts",
+    "typecheck": "tsc --noEmit",
+    "zctas:miami": "tsx scripts/build-miami-zctas.ts",
+    "truth": "python3 eval/ground_truth.py",
+    "ask": "tsx scripts/ask.ts",
+    "eval": "tsx scripts/eval.ts",
+    "check:basemap": "tsx scripts/check-basemap.ts",
+    "verify": "npm run typecheck && npm test && npm run check:basemap && npm run build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "@turf/turf": "^7.4.0",
     "gtfs-realtime-bindings": "^1.1.1",
     "maplibre-gl": "^5.24.0",
     "next": "16.2.6",
     "plotly.js-dist-min": "^2.35.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-map-gl": "^8.1.1"
+    "react-map-gl": "^8.1.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@next/env": "^16.2.6",
     "@tailwindcss/postcss": "^4",
     "@types/geojson": "^7946.0.16",
     "@types/node": "^20",
@@ -28,6 +42,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^4.1.12"
   }
 }
