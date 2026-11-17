@@ -1,0 +1,897 @@
+{
+  "version": 2,
+  "notes": "Golden questions for ask-the-map. `reference` is the tool call a correct agent would make; eval/ground_truth.py computes `expected` from the raw snapshot with an independent implementation (Shapely + projected coordinates), and tests check the TypeScript engine agrees. Sprint 4 scores the full LLM agent against the same expected answers.",
+  "questions": [
+    {
+      "id": "G01",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "What share of households in 33127 have no internet?",
+      "interpretation": "pctNoInternet for ZIP 33127.",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33127"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "pctNoInternet",
+        "tolerance": 0.1
+      }
+    },
+    {
+      "id": "G02",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "How many people of Haitian ancestry live in ZIP 33161?",
+      "interpretation": "haitianPop for ZIP 33161 (ACS ancestry count).",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33161"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "haitianPop",
+        "tolerance": 0
+      }
+    },
+    {
+      "id": "G03",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "Is 33311 a high-need ZIP?",
+      "interpretation": "Education need tier of 33311; the answer should be yes/no with the tier.",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33311"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "educationNeedTier"
+      }
+    },
+    {
+      "id": "G04",
+      "metro": "miami",
+      "category": "filter_rank",
+      "question": "What are the top 5 Broward ZIPs by educational need?",
+      "interpretation": "Reliable Broward ZIPs ranked by composite educationNeedScore, descending; top 5 in order.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Broward"
+          ],
+          "limit": 5
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 5
+      }
+    },
+    {
+      "id": "G05",
+      "metro": "miami",
+      "category": "filter_rank",
+      "question": "Which Miami-Dade ZIPs have more than 20% Haitian ancestry?",
+      "interpretation": "Reliable Miami-Dade ZIPs with haitianPopPct > 20.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Miami-Dade"
+          ],
+          "metrics": [
+            {
+              "metric": "haitianPopPct",
+              "min": 20
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G06",
+      "metro": "nyc",
+      "category": "filter_rank",
+      "question": "Which 3 Brooklyn ZIPs have the most residents of Haitian ancestry?",
+      "interpretation": "Reliable Brooklyn ZIPs ranked by haitianPop count, descending; top 3 in order.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Brooklyn"
+          ],
+          "sortBy": {
+            "key": "haitianPop",
+            "order": "desc"
+          },
+          "limit": 3
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 3
+      }
+    },
+    {
+      "id": "G07",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "Which Miami ZIPs have high need and no library within a mile?",
+      "interpretation": "Whole metro ('Miami' = the map). High education-need tier, reliable, and no library within 1 straight-line mile of the ZIP boundary (kiosks and the law library don't count).",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "need": {
+            "tiers": [
+              "high"
+            ]
+          },
+          "access": [
+            {
+              "kind": "library",
+              "withinMiles": 1,
+              "has": false
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G08",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "What's the closest library to 33034?",
+      "interpretation": "Library with the smallest straight-line distance to ZIP 33034's boundary.",
+      "reference": {
+        "tool": "find_places",
+        "input": {
+          "kind": "library",
+          "nearZip": "33034",
+          "limit": 1
+        }
+      },
+      "answer": {
+        "type": "nearest_place"
+      }
+    },
+    {
+      "id": "G09",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "How many libraries are within 2 miles of 33150?",
+      "interpretation": "Count of libraries within 2 straight-line miles of ZIP 33150's boundary, including any inside it.",
+      "reference": {
+        "tool": "find_places",
+        "input": {
+          "kind": "library",
+          "nearZip": "33150",
+          "withinMiles": 2,
+          "limit": 100
+        }
+      },
+      "answer": {
+        "type": "count"
+      }
+    },
+    {
+      "id": "G10",
+      "metro": "miami",
+      "category": "compound",
+      "question": "Which high-need Broward ZIPs have more than 12% of households without internet?",
+      "interpretation": "Reliable Broward ZIPs in the high education-need tier with pctNoInternet > 12.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Broward"
+          ],
+          "need": {
+            "tiers": [
+              "high"
+            ]
+          },
+          "metrics": [
+            {
+              "metric": "pctNoInternet",
+              "min": 12
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G11",
+      "metro": "miami",
+      "category": "compound",
+      "question": "Which high-need Miami-Dade ZIPs have fewer than two public schools within a mile of the ZIP's center?",
+      "interpretation": "Reliable Miami-Dade ZIPs in the high tier with 0 or 1 public schools within 1 straight-line mile of a central point inside the ZIP (measure = center).",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Miami-Dade"
+          ],
+          "need": {
+            "tiers": [
+              "high"
+            ]
+          },
+          "access": [
+            {
+              "kind": "school",
+              "withinMiles": 1,
+              "has": false,
+              "atLeast": 2,
+              "measure": "center"
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G12",
+      "metro": "miami",
+      "category": "compare",
+      "question": "Which county has more residents of Haitian ancestry, Broward or Miami-Dade?",
+      "interpretation": "Compare summed haitianPop across ZIPs assigned to each county.",
+      "reference": {
+        "tool": "summarize_regions",
+        "input": {
+          "regions": [
+            "Broward",
+            "Miami-Dade"
+          ]
+        }
+      },
+      "answer": {
+        "type": "argmax_region",
+        "field": "haitianPop"
+      }
+    },
+    {
+      "id": "G13",
+      "metro": "miami",
+      "category": "compare",
+      "question": "How many high-need ZIPs does each county have?",
+      "interpretation": "Count of high education-need ZIPs per county.",
+      "reference": {
+        "tool": "summarize_regions",
+        "input": {}
+      },
+      "answer": {
+        "type": "region_values",
+        "field": "tierCounts.high"
+      }
+    },
+    {
+      "id": "G14",
+      "metro": "miami",
+      "category": "ambiguous",
+      "question": "Where is need worst in Miami?",
+      "interpretation": "Ambiguous: 'Miami' could be the metro or Miami-Dade, 'need' could be either mode. Acceptable: the top ZIPs by composite educational need across the metro, with the definition stated. Scored on overlap with the top 5 plus disclosure.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "limit": 5
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 5,
+        "scoring": "overlap",
+        "mustDisclose": [
+          "definition of need"
+        ]
+      }
+    },
+    {
+      "id": "G15",
+      "metro": "miami",
+      "category": "out_of_scope",
+      "question": "Which Miami ZIPs have the lowest high school graduation rates?",
+      "interpretation": "Out of scope: Miami school data has no graduation rates. The agent should say so and may offer adults-without-diploma (pctNoHS) as a related measure, clearly labeled as different.",
+      "reference": {
+        "tool": "describe_data",
+        "input": {}
+      },
+      "answer": {
+        "type": "refusal",
+        "mustMention": [
+          "graduation"
+        ]
+      }
+    },
+    {
+      "id": "G16",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "How many people in 33150 speak French, Haitian Creole, or Cajun at home?",
+      "interpretation": "speakers for 33150 (ACS groups the three languages).",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33150"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "speakers",
+        "tolerance": 0
+      }
+    },
+    {
+      "id": "G17",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "What percent of adults in 33168 don't have a high school diploma?",
+      "interpretation": "pctNoHS for 33168; whole-number rounding is fine.",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33168"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "pctNoHS",
+        "tolerance": 0.6
+      }
+    },
+    {
+      "id": "G18",
+      "metro": "nyc",
+      "category": "lookup",
+      "question": "What's the Haitian ancestry share in 11226?",
+      "interpretation": "haitianPopPct for 11226.",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "11226"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "haitianPopPct",
+        "tolerance": 0.6
+      }
+    },
+    {
+      "id": "G19",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "whats the need score for 33150",
+      "interpretation": "Casual phrasing. educationNeedScore for 33150.",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33150"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "educationNeedScore",
+        "tolerance": 0.6
+      }
+    },
+    {
+      "id": "G20",
+      "metro": "miami",
+      "category": "lookup",
+      "question": "Is 33162 a high-concentration ZIP for Haitian residents?",
+      "interpretation": "Population-mode tier of 33162 (about where Haitian residents are concentrated, not educational need).",
+      "reference": {
+        "tool": "get_zip",
+        "input": {
+          "zcta": "33162"
+        }
+      },
+      "answer": {
+        "type": "value",
+        "field": "populationNeedTier"
+      }
+    },
+    {
+      "id": "G21",
+      "metro": "miami",
+      "category": "filter_rank",
+      "question": "Top 5 Palm Beach ZIPs with the highest share of households without internet",
+      "interpretation": "Reliable Palm Beach ZIPs ranked by pctNoInternet, descending.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Palm Beach"
+          ],
+          "sortBy": {
+            "key": "pctNoInternet",
+            "order": "desc"
+          },
+          "limit": 5
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 5
+      }
+    },
+    {
+      "id": "G22",
+      "metro": "miami",
+      "category": "filter_rank",
+      "question": "Which Broward ZIPs have at least 10,000 residents of Haitian ancestry?",
+      "interpretation": "Reliable Broward ZIPs with haitianPop >= 10000.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Broward"
+          ],
+          "metrics": [
+            {
+              "metric": "haitianPop",
+              "min": 10000
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G23",
+      "metro": "nyc",
+      "category": "filter_rank",
+      "question": "List the 5 Queens ZIPs with the highest educational need.",
+      "interpretation": "Reliable Queens ZIPs by educationNeedScore, top 5 in order.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Queens"
+          ],
+          "limit": 5
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 5
+      }
+    },
+    {
+      "id": "G24",
+      "metro": "miami",
+      "category": "filter_rank",
+      "question": "Which 3 ZIPs in the metro have the most French or Haitian Creole speakers with limited English?",
+      "interpretation": "Reliable ZIPs ranked by limitedEnglish count, top 3.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "sortBy": {
+            "key": "limitedEnglish",
+            "order": "desc"
+          },
+          "limit": 3
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 3
+      }
+    },
+    {
+      "id": "G25",
+      "metro": "miami",
+      "category": "filter_rank",
+      "question": "How many Miami-Dade ZIPs have a high concentration of Haitian residents?",
+      "interpretation": "Count of reliable Miami-Dade ZIPs in the high population-mode tier.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Miami-Dade"
+          ],
+          "need": {
+            "mode": "population",
+            "tiers": [
+              "high"
+            ]
+          },
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "count"
+      }
+    },
+    {
+      "id": "G26",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "How many libraries are within 1 mile of 33311?",
+      "interpretation": "Libraries within 1 straight-line mile of 33311's boundary.",
+      "reference": {
+        "tool": "find_places",
+        "input": {
+          "kind": "library",
+          "nearZip": "33311",
+          "withinMiles": 1,
+          "limit": 100
+        }
+      },
+      "answer": {
+        "type": "count"
+      }
+    },
+    {
+      "id": "G27",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "Nearest public school to 33034?",
+      "interpretation": "School with the smallest straight-line distance to 33034's boundary (0 if inside).",
+      "reference": {
+        "tool": "find_places",
+        "input": {
+          "kind": "school",
+          "nearZip": "33034",
+          "limit": 1
+        }
+      },
+      "answer": {
+        "type": "nearest_place"
+      }
+    },
+    {
+      "id": "G28",
+      "metro": "nyc",
+      "category": "spatial",
+      "question": "What's the closest library to 11236?",
+      "interpretation": "Library nearest 11236's boundary.",
+      "reference": {
+        "tool": "find_places",
+        "input": {
+          "kind": "library",
+          "nearZip": "11236",
+          "limit": 1
+        }
+      },
+      "answer": {
+        "type": "nearest_place"
+      }
+    },
+    {
+      "id": "G29",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "Which Broward ZIPs have no library within 2 miles?",
+      "interpretation": "Reliable Broward ZIPs with no library within 2 miles of the boundary.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Broward"
+          ],
+          "access": [
+            {
+              "kind": "library",
+              "withinMiles": 2,
+              "has": false
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G30",
+      "metro": "miami",
+      "category": "spatial",
+      "question": "Closest library to Little Haiti (33127)?",
+      "interpretation": "Library nearest 33127's boundary.",
+      "reference": {
+        "tool": "find_places",
+        "input": {
+          "kind": "library",
+          "nearZip": "33127",
+          "limit": 1
+        }
+      },
+      "answer": {
+        "type": "nearest_place"
+      }
+    },
+    {
+      "id": "G31",
+      "metro": "miami",
+      "category": "compound",
+      "question": "High-need Palm Beach ZIPs where over 30% of adults lack a diploma",
+      "interpretation": "Reliable Palm Beach ZIPs, high education tier, pctNoHS > 30.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Palm Beach"
+          ],
+          "need": {
+            "tiers": [
+              "high"
+            ]
+          },
+          "metrics": [
+            {
+              "metric": "pctNoHS",
+              "min": 30
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G32",
+      "metro": "miami",
+      "category": "compound",
+      "question": "Which ZIPs are more than 15% Haitian but have no library within a mile?",
+      "interpretation": "Reliable metro ZIPs with haitianPopPct > 15 and no library within 1 mile.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "metrics": [
+            {
+              "metric": "haitianPopPct",
+              "min": 15
+            }
+          ],
+          "access": [
+            {
+              "kind": "library",
+              "withinMiles": 1,
+              "has": false
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G33",
+      "metro": "nyc",
+      "category": "compound",
+      "question": "Which high-need Brooklyn ZIPs have more than 15% of households offline?",
+      "interpretation": "Reliable Brooklyn ZIPs, high education tier, pctNoInternet > 15.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Brooklyn"
+          ],
+          "need": {
+            "tiers": [
+              "high"
+            ]
+          },
+          "metrics": [
+            {
+              "metric": "pctNoInternet",
+              "min": 15
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "zip_set"
+      }
+    },
+    {
+      "id": "G34",
+      "metro": "miami",
+      "category": "compound",
+      "question": "How many medium- or high-need Broward ZIPs have fewer than 3 public schools within a mile of the ZIP's center?",
+      "interpretation": "Count of reliable Broward ZIPs in the medium or high tier with 0\u20132 schools within 1 mile of the center point.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Broward"
+          ],
+          "need": {
+            "tiers": [
+              "high",
+              "medium"
+            ]
+          },
+          "access": [
+            {
+              "kind": "school",
+              "withinMiles": 1,
+              "has": false,
+              "atLeast": 3,
+              "measure": "center"
+            }
+          ],
+          "limit": 200
+        }
+      },
+      "answer": {
+        "type": "count"
+      }
+    },
+    {
+      "id": "G35",
+      "metro": "nyc",
+      "category": "compare",
+      "question": "Which borough has more residents of Haitian ancestry, Brooklyn or Queens?",
+      "interpretation": "Compare summed haitianPop.",
+      "reference": {
+        "tool": "summarize_regions",
+        "input": {
+          "regions": [
+            "Brooklyn",
+            "Queens"
+          ]
+        }
+      },
+      "answer": {
+        "type": "argmax_region",
+        "field": "haitianPop"
+      }
+    },
+    {
+      "id": "G36",
+      "metro": "miami",
+      "category": "compare",
+      "question": "How many libraries does each county have?",
+      "interpretation": "Library locations per county, as listed in the data.",
+      "reference": {
+        "tool": "summarize_regions",
+        "input": {}
+      },
+      "answer": {
+        "type": "region_values",
+        "field": "libraries"
+      }
+    },
+    {
+      "id": "G37",
+      "metro": "miami",
+      "category": "ambiguous",
+      "question": "Where do the most Haitian families live?",
+      "interpretation": "Ambiguous: most by count or by share. Either reading is acceptable if stated. Scored on overlap with the top 5 under either reading.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "sortBy": {
+            "key": "haitianPop",
+            "order": "desc"
+          },
+          "limit": 5
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 5,
+        "scoring": "overlap",
+        "mustDisclose": [
+          "count vs share"
+        ],
+        "alternatives": [
+          {
+            "tool": "find_zips",
+            "input": {
+              "sortBy": {
+                "key": "haitianPopPct",
+                "order": "desc"
+              },
+              "limit": 5
+            }
+          },
+          {
+            "tool": "find_zips",
+            "input": {
+              "need": {
+                "mode": "population",
+                "tiers": [
+                  "high"
+                ]
+              },
+              "limit": 5
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "G38",
+      "metro": "miami",
+      "category": "ambiguous",
+      "question": "Show me the neediest part of Broward",
+      "interpretation": "Ambiguous: 'neediest' read as top composite need in Broward. Scored on overlap with the top 5.",
+      "reference": {
+        "tool": "find_zips",
+        "input": {
+          "regions": [
+            "Broward"
+          ],
+          "limit": 5
+        }
+      },
+      "answer": {
+        "type": "ranked_zips",
+        "n": 5,
+        "scoring": "overlap",
+        "mustDisclose": [
+          "definition of need"
+        ]
+      }
+    },
+    {
+      "id": "G39",
+      "metro": "miami",
+      "category": "out_of_scope",
+      "question": "Which Miami ZIPs have the most after-school tutoring programs?",
+      "interpretation": "Out of scope: no tutoring-program data. Should say so; may offer libraries as a related measure.",
+      "reference": {
+        "tool": "describe_data",
+        "input": {}
+      },
+      "answer": {
+        "type": "refusal",
+        "mustMention": [
+          "tutoring"
+        ]
+      }
+    },
+    {
+      "id": "G40",
+      "metro": "nyc",
+      "category": "out_of_scope",
+      "question": "What's the crime rate in 11226?",
+      "interpretation": "Out of scope: no crime data.",
+      "reference": {
+        "tool": "describe_data",
+        "input": {}
+      },
+      "answer": {
+        "type": "refusal",
+        "mustMention": [
+          "crime"
+        ]
+      }
+    }
+  ]
+}
