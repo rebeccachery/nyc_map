@@ -1,13 +1,15 @@
 "use client";
 
 import AppShell from "@/components/AppShell";
+import AskPanel from "@/components/AskPanel";
+import { askMap, type AskResponse } from "@/lib/askClient";
 import NYCMap from "@/components/NYCMap";
 import Sidebar, { type SidebarFilters } from "@/components/Sidebar";
 import type { HaitianZctaApiResponse, LayerErrors } from "@/lib/haitianZctaTypes";
 import { metroApiQuery } from "@/lib/metroApi";
 import { setLastMetroId } from "@/lib/metroPreferences";
 import { getMetroConfig, type MetroId } from "@/lib/metroRegistry";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FeatureCollection } from "geojson";
 
 type CommuteAppProps = {
@@ -44,6 +46,18 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
   const [loadingSchools, setLoadingSchools] = useState(false);
   const [loadingLibraries, setLoadingLibraries] = useState(false);
   const [errors, setErrors] = useState<LayerErrors>({});
+
+  // Ask-the-map state is tagged with its metro, so switching metros hides a stale answer
+  // without an effect.
+  const [ask, setAsk] = useState<{
+    metro: MetroId;
+    result: AskResponse | null;
+    loading: boolean;
+    error: string | null;
+    mapActive: boolean;
+  } | null>(null);
+  const askAbort = useRef<AbortController | null>(null);
+  const askState = ask?.metro === metroId ? ask : null;
 
   const setLayerError = useCallback((layer: keyof LayerErrors, message: string | null) => {
     setErrors((prev) => {
@@ -169,6 +183,65 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
 
   const regionPropertyKey = metro.ui.regionPropertyKey;
 
+  const handleAsk = useCallback(
+    async (question: string) => {
+      askAbort.current?.abort();
+      const controller = new AbortController();
+      askAbort.current = controller;
+      setAsk((prev) => ({
+        metro: metroId,
+        result: prev?.metro === metroId ? prev.result : null,
+        loading: true,
+        error: null,
+        mapActive: false,
+      }));
+
+      const outcome = await askMap(question, metroId, controller.signal);
+      if (controller.signal.aborted) return;
+
+      if (!outcome.ok) {
+        setAsk({ metro: metroId, result: null, loading: false, error: outcome.error, mapActive: false });
+        return;
+      }
+      const view = outcome.data.map;
+      setAsk({ metro: metroId, result: outcome.data, loading: false, error: null, mapActive: !!view });
+      if (view) {
+        // Show the answer the way it was computed: same need mode, the layers it depends on,
+        // and one county/borough only when the answer is about one.
+        setFilters((f) => ({
+          ...f,
+          showHaitianHeat: true,
+          needScoreMode: view.needMode,
+          showLibraries: f.showLibraries || view.layers.libraries,
+          showSchools: f.showSchools || view.layers.schools,
+        }));
+        setSelectedBorough(view.regions?.length === 1 ? view.regions[0] : null);
+        setSelectedZcta(null);
+      }
+    },
+    [metroId]
+  );
+
+  const handleAskCancel = useCallback(() => {
+    askAbort.current?.abort();
+    setAsk((prev) => (prev ? { ...prev, loading: false } : prev));
+  }, []);
+
+  const handleAskClearMap = useCallback(() => {
+    setAsk((prev) => (prev ? { ...prev, mapActive: false } : prev));
+  }, []);
+
+  const handleAskReset = useCallback(() => {
+    askAbort.current?.abort();
+    setAsk(null);
+  }, []);
+
+  const askHighlight = useMemo(() => {
+    const r = askState?.result;
+    if (!askState?.mapActive || !r?.map) return null;
+    return { zips: r.map.highlightZips, places: r.focusPlaces };
+  }, [askState]);
+
   useEffect(() => {
     if (!selectedZcta || !selectedBorough || !haitianZctaData) return;
     const feature = haitianZctaData.features.find(
@@ -198,6 +271,7 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
           selectedZcta={selectedZcta}
           onSelectZcta={handleSelectZcta}
           loadingHaitianZcta={loadingHaitianZcta}
+          askHighlight={askHighlight}
         />
 
         <Sidebar
@@ -218,6 +292,20 @@ export default function CommuteApp({ metroId }: CommuteAppProps) {
           loadingSchools={loadingSchools}
           loadingLibraries={loadingLibraries}
           errors={errors}
+          askPanel={
+            <AskPanel
+              metro={metro}
+              result={askState?.result ?? null}
+              loading={askState?.loading ?? false}
+              error={askState?.error ?? null}
+              mapActive={!!askHighlight}
+              onAsk={handleAsk}
+              onCancel={handleAskCancel}
+              onClearMap={handleAskClearMap}
+              onReset={handleAskReset}
+              onSelectZip={handleSelectZcta}
+            />
+          }
         />
       </div>
     </AppShell>

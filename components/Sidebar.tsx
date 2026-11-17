@@ -38,9 +38,11 @@ export type SidebarProps = {
   loadingSchools?: boolean;
   loadingLibraries?: boolean;
   errors?: LayerErrors;
+  /** Ask-the-map panel, rendered in the first tab. */
+  askPanel?: React.ReactNode;
 };
 
-type SidebarTab = "explore" | "layers";
+type SidebarTab = "ask" | "explore" | "layers";
 
 export default function Sidebar({
   metro,
@@ -60,8 +62,9 @@ export default function Sidebar({
   loadingSchools = false,
   loadingLibraries = false,
   errors = {},
+  askPanel,
 }: SidebarProps) {
-  const [tab, setTab] = useState<SidebarTab>("explore");
+  const [tab, setTab] = useState<SidebarTab>(askPanel ? "ask" : "explore");
   const [zipSearch, setZipSearch] = useState("");
   const [zipSearchError, setZipSearchError] = useState<string | null>(null);
 
@@ -156,6 +159,7 @@ export default function Sidebar({
       >
         {(
           [
+            ...(askPanel ? ([["ask", "Ask"]] as const) : []),
             ["explore", "Explore"],
             ["layers", "Layers"],
           ] as const
@@ -176,6 +180,12 @@ export default function Sidebar({
           </button>
         ))}
       </div>
+
+      {tab === "ask" && askPanel && (
+        <div className="mt-4" role="tabpanel">
+          {askPanel}
+        </div>
+      )}
 
       {tab === "explore" && (
         <div className="mt-4 space-y-4" role="tabpanel">
@@ -427,7 +437,7 @@ export default function Sidebar({
           <label className="flex cursor-pointer items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
             <div className="text-left">
               <span className="text-xs font-semibold text-zinc-200">Libraries</span>
-              <p className="text-caption">Free tutoring and literacy support locations</p>
+              <p className="text-caption">Public library locations (possible tutoring sites)</p>
             </div>
             <input
               type="checkbox"
