@@ -1,66 +1,9 @@
 import { NextResponse } from "next/server";
-import type { Feature, FeatureCollection } from "geojson";
 import { fetchMiamiLibraries } from "@/lib/miamiOverlays";
+import { fetchNycLibraries } from "@/lib/nycOverlays";
 import { parseMetroId } from "@/lib/metroApi";
 
 export const dynamic = "force-dynamic";
-
-const LIBRARIES_DATASET_ID = "feuq-due4";
-const BASE_URL = "https://data.cityofnewyork.us/resource";
-
-type SocrataLibraryRow = {
-  the_geom?: {
-    type: "Point";
-    coordinates: [number, number];
-  };
-  name?: string;
-  streetname?: string;
-  housenum?: string;
-  city?: string;
-  zip?: string;
-  system?: string;
-  borocode?: string;
-  url?: string;
-};
-
-async function fetchNycLibraries(): Promise<FeatureCollection> {
-  const url = `${BASE_URL}/${LIBRARIES_DATASET_ID}.json?$limit=500`;
-
-  const token = process.env.NEXT_PUBLIC_NYC_SODA_APP_TOKEN;
-  const headers: Record<string, string> = {};
-  if (token) headers["X-App-Token"] = token;
-
-  const res = await fetch(url, { headers, next: { revalidate: 3600 } });
-  if (!res.ok) {
-    throw new Error(`NYC Open Data returned status ${res.status}`);
-  }
-
-  const rows = (await res.json()) as SocrataLibraryRow[];
-  const features: Feature[] = [];
-
-  for (const row of rows) {
-    if (row.the_geom?.coordinates) {
-      features.push({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: row.the_geom.coordinates,
-        },
-        properties: {
-          name: row.name || "Unknown Library Branch",
-          streetAddress: `${row.housenum || ""} ${row.streetname || ""}`.trim(),
-          city: row.city || "",
-          zip: row.zip || "",
-          system: row.system || "Public Library",
-          boroCode: row.borocode || "",
-          url: row.url || "",
-        },
-      });
-    }
-  }
-
-  return { type: "FeatureCollection", features };
-}
 
 export async function GET(request: Request) {
   try {
