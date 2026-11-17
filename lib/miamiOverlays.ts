@@ -11,8 +11,10 @@ const MIAMI_DADE_LIBRARIES_URL =
   "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/3/query";
 const BROWARD_SCHOOLS_GEOJSON =
   "https://geohub-bcgis.opendata.arcgis.com/datasets/b888ffdf409044829a8cfe9d69c16a02_0.geojson?outSR=4326";
-const BROWARD_LIBRARIES_GEOJSON =
-  "https://geohub-bcgis.opendata.arcgis.com/datasets/f9944ea846044fdba11e4c057d2344a7_0.geojson?outSR=4326";
+// Broward County GIS (BCGIS) "Libraries" layer. The GeoHub dataset previously used here
+// (f9944ea846044fdba11e4c057d2344a7) actually holds Richmond, Virginia library branches.
+const BROWARD_LIBRARIES_URL =
+  "https://bcgishub.broward.org/server/rest/services/Core/Libraries/MapServer/0/query";
 const PALM_BEACH_SCHOOLS_URL =
   "https://maps.co.palm-beach.fl.us/arcgis/rest/services/OpenData/Education_Open_Data/MapServer/0/query";
 const PALM_BEACH_LIBRARIES_URL =
@@ -72,10 +74,12 @@ function normalizeBrowardLibrary(feature: Feature): Feature {
   return {
     ...feature,
     properties: {
-      name: props.Name ?? "Library Branch",
-      streetAddress: "",
-      city: "Broward County",
-      zip: "",
+      name: props.LIBNAME ?? "Library Branch",
+      streetAddress: props.ADDRESS ?? "",
+      city: props.CITY ?? "",
+      zip: props.ZIPCODE ? String(props.ZIPCODE).padStart(5, "0") : "",
+      phone: props.PHONE2 ?? "",
+      branchType: props.TYPE ?? "",
       county: "Broward",
       system: "Broward County Library",
     },
@@ -161,7 +165,9 @@ export async function fetchMiamiLibraries(): Promise<FeatureCollection> {
     fetchArcGisGeoJson(MIAMI_DADE_LIBRARIES_URL, {
       outFields: "BRANCH,ADDRESS,CITY,ZIPCODE,WEBSITE",
     }),
-    fetchGeoJsonUrl(BROWARD_LIBRARIES_GEOJSON),
+    fetchArcGisGeoJson(BROWARD_LIBRARIES_URL, {
+      outFields: "LIBNAME,ADDRESS,CITY,ZIPCODE,PHONE2,TYPE",
+    }),
     fetchArcGisGeoJson(PALM_BEACH_LIBRARIES_URL, {
       outFields: "NAME,ADDRESS,MUNICIPALITY,ZIP,PHONE,WEBSITE",
     }),

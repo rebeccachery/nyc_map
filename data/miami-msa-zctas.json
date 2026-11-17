@@ -1,4 +1,6 @@
 {
+  "source": "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt",
+  "rule": "Each 2020 ZCTA is assigned to the county holding the largest share of its land area; ZCTAs whose main county is Miami-Dade, Broward, or Palm Beach are included.",
   "zctas": [
     {
       "zcta": "33004",
@@ -94,6 +96,10 @@
     },
     {
       "zcta": "33033",
+      "county": "Miami-Dade"
+    },
+    {
+      "zcta": "33034",
       "county": "Miami-Dade"
     },
     {
@@ -633,10 +639,6 @@
       "county": "Palm Beach"
     },
     {
-      "zcta": "33438",
-      "county": "Palm Beach"
-    },
-    {
       "zcta": "33441",
       "county": "Broward"
     },
@@ -658,6 +660,10 @@
     },
     {
       "zcta": "33449",
+      "county": "Palm Beach"
+    },
+    {
+      "zcta": "33458",
       "county": "Palm Beach"
     },
     {
