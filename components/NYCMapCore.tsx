@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import type { FeatureCollection, Point } from "geojson";
+import type { Feature, FeatureCollection, Point, Position } from "geojson";
 import { HAITIAN_COLORSCALE, getActiveNeedFromProperties, tierLabel, type NeedScoreMode } from "@/lib/haitianNeed";
-import { getFeatureCentroid } from "@/lib/geo";
 import { parseModzctaLabel } from "@/lib/format";
 import {
   buildLibraryHoverText,
@@ -13,6 +12,17 @@ import {
   getMapStatusLines,
 } from "@/lib/mapHoverText";
 import { getRegionCenter, type MetroConfig } from "@/lib/metroRegistry";
+import { boundsOf, fitView } from "@/lib/mapFit";
+import { BASEMAP_ATTRIBUTION, BASEMAP_STYLE_URL } from "@/lib/basemap";
+
+/** ZIPs and places an ask-the-map answer wants shown. */
+export type AskHighlight = {
+  zips: string[];
+  places: { id: string; name: string; kind: "library" | "school"; lat: number; lon: number }[];
+};
+
+/** Width of the floating sidebar that covers the map's left edge (w-[360px] + left-4 + gap). */
+const SIDEBAR_OVERLAP_PX = 392;
 
 export type NYCMapCoreProps = {
   metro: MetroConfig;
@@ -30,6 +40,7 @@ export type NYCMapCoreProps = {
   selectedZcta?: string | null;
   onSelectZcta?: (zcta: string | null) => void;
   loadingHaitianZcta?: boolean;
+  askHighlight?: AskHighlight | null;
   className?: string;
 };
 
@@ -90,6 +101,7 @@ export default function NYCMapCore({
   selectedZcta = null,
   onSelectZcta,
   loadingHaitianZcta = false,
+  askHighlight = null,
   className,
 }: NYCMapCoreProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,10 +130,15 @@ export default function NYCMapCore({
     return { type: "FeatureCollection", features: filteredZctaFeatures };
   }, [filteredZctaFeatures]);
 
+  const highlightSet = useMemo(
+    () => (askHighlight?.zips.length ? new Set(askHighlight.zips) : null),
+    [askHighlight]
+  );
+
   const mapData = useMemo(() => {
     const traces: any[] = [
       {
-        type: "scattermapbox",
+        type: "scattermap",
         lat: [],
         lon: [],
         mode: "markers",
@@ -145,7 +162,7 @@ export default function NYCMapCore({
       });
 
       traces.push({
-        type: "choroplethmapbox",
+        type: "choroplethmap",
         geojson: heatGeoJson,
         featureidkey: "properties.zcta",
         locations,
@@ -155,6 +172,7 @@ export default function NYCMapCore({
         colorscale: applyOpacityToColorscale(HAITIAN_COLORSCALE, haitianHeatOpacity),
         marker: {
           line: { width: 0.6, color: "rgba(39, 39, 42, 0.7)" },
+          opacity: highlightSet ? 0.22 : 1,
         },
         showscale: false,
         hoverinfo: "text",
@@ -162,6 +180,30 @@ export default function NYCMapCore({
         name: needScoreMode === "education" ? "Educational Need (ZIP)" : "Haitian Pop Heat (ZIP)",
         showlegend: true,
       });
+
+      if (highlightSet) {
+        const answerFeatures = heatGeoJson.features.filter((f) =>
+          highlightSet.has(String(f.properties?.zcta))
+        );
+        if (answerFeatures.length) {
+          traces.push({
+            type: "choroplethmap",
+            geojson: { type: "FeatureCollection", features: answerFeatures },
+            featureidkey: "properties.zcta",
+            locations: answerFeatures.map((f) => String(f.properties?.zcta)),
+            z: answerFeatures.map((f) => getActiveNeedFromProperties(f.properties ?? {}, needScoreMode).colorValue),
+            zmin: 0,
+            zmax: 1,
+            colorscale: applyOpacityToColorscale(HAITIAN_COLORSCALE, Math.max(haitianHeatOpacity, 0.9)),
+            marker: { line: { width: 2.2, color: "rgba(103, 232, 249, 0.95)" } },
+            showscale: false,
+            hoverinfo: "text",
+            text: answerFeatures.map((f) => buildZctaHoverText(f.properties ?? {}, needScoreMode)),
+            name: "ZIPs in answer",
+            showlegend: true,
+          });
+        }
+      }
 
       if (selectedZcta) {
         const selectedFeature = heatGeoJson.features.find(
@@ -173,7 +215,7 @@ export default function NYCMapCore({
             features: [selectedFeature],
           };
           traces.push({
-            type: "choroplethmapbox",
+            type: "choroplethmap",
             geojson: highlightCollection,
             featureidkey: "properties.zcta",
             locations: [selectedZcta],
@@ -223,7 +265,7 @@ export default function NYCMapCore({
 
       if (bubbleLat.length > 0) {
         traces.push({
-          type: "scattermapbox",
+          type: "scattermap",
           mode: "markers",
           lat: bubbleLat,
           lon: bubbleLon,
@@ -269,14 +311,14 @@ export default function NYCMapCore({
 
       if (schoolLat.length > 0) {
         traces.push({
-          type: "scattermapbox",
+          type: "scattermap",
           mode: "markers",
           lat: schoolLat,
           lon: schoolLon,
           text: schoolText,
           hoverinfo: "text",
           marker: { size: 8, color: schoolColors, opacity: 0.95 },
-          name: "High Schools",
+          name: metro.overlays.schools.hasPerformanceMetrics ? "High Schools" : "Public Schools",
           showlegend: true,
         });
       }
@@ -299,7 +341,7 @@ export default function NYCMapCore({
 
       if (libLat.length > 0) {
         traces.push({
-          type: "scattermapbox",
+          type: "scattermap",
           mode: "markers",
           lat: libLat,
           lon: libLon,
@@ -311,10 +353,36 @@ export default function NYCMapCore({
             opacity: 0.95,
             symbol: "circle",
           },
-          name: "Libraries (Tutoring Centers)",
+          name: "Libraries",
           showlegend: true,
         });
       }
+    }
+
+    if (askHighlight?.places.length) {
+      const lat = askHighlight.places.map((p) => p.lat);
+      const lon = askHighlight.places.map((p) => p.lon);
+      const text = askHighlight.places.map((p) => `<b>${p.name}</b><br>${p.kind === "library" ? "Library" : "School"} in answer`);
+      traces.push({
+        type: "scattermap",
+        mode: "markers",
+        lat,
+        lon,
+        hoverinfo: "skip",
+        marker: { size: 26, color: "rgba(255, 255, 255, 0.35)" },
+        showlegend: false,
+      });
+      traces.push({
+        type: "scattermap",
+        mode: "markers",
+        lat,
+        lon,
+        text,
+        hoverinfo: "text",
+        marker: { size: 13, color: "rgba(250, 204, 21, 0.95)" },
+        name: "Places in answer",
+        showlegend: true,
+      });
     }
 
     return traces;
@@ -332,6 +400,8 @@ export default function NYCMapCore({
     haitianHeatOpacity,
     needScoreMode,
     selectedZcta,
+    highlightSet,
+    askHighlight,
   ]);
 
   const handlePlotlyClick = useCallback(
@@ -374,8 +444,8 @@ export default function NYCMapCore({
             borderwidth: 1,
             font: { size: 10, color: "#f4f4f5" },
           },
-          mapbox: {
-            style: "carto-positron",
+          map: {
+            style: BASEMAP_STYLE_URL,
             center: targetCenter,
             zoom: targetZoom,
           },
@@ -404,25 +474,43 @@ export default function NYCMapCore({
     };
   }, [mapData, metro.id, selectedBorough, onSelectZcta]);
 
+  /** Moves the map so `features` and `points` fit the area not covered by the sidebar. */
+  const fitTo = useCallback(
+    (features: Feature[], points: Position[] = [], maxZoom = 13) => {
+      const container = containerRef.current;
+      const bounds = boundsOf(features, points);
+      if (!container || !bounds) return;
+      const width = container.clientWidth;
+      const overlap = width > 900 ? SIDEBAR_OVERLAP_PX : 0;
+      const view = fitView(bounds, width - overlap, container.clientHeight, 0.25, 8, maxZoom);
+      // Shift the centre west by half the covered strip so the target sits in the visible area.
+      const degPerPx = 360 / (512 * 2 ** view.zoom);
+      const center = { lat: view.lat, lon: view.lon - (overlap / 2) * degPerPx };
+      import("plotly.js-dist-min").then((PlotlyModule) => {
+        const Plotly = PlotlyModule.default || PlotlyModule;
+        Plotly.relayout(container, {
+          "map.center": center,
+          "map.zoom": view.zoom,
+        } as Record<string, unknown>).catch((e: unknown) => console.error("Plotly fit error:", e));
+      });
+    },
+    []
+  );
+
+  // Selecting a ZIP fits its outline (a fixed zoom on its centre filled the screen for large ZIPs).
   useEffect(() => {
-    if (!containerRef.current || !selectedZcta || !haitianZctaData) return;
+    if (!selectedZcta || !haitianZctaData) return;
+    const feature = haitianZctaData.features.find((f) => String(f.properties?.zcta) === selectedZcta);
+    if (feature) fitTo([feature], [], 13.5);
+  }, [selectedZcta, haitianZctaData, fitTo]);
 
-    const feature = haitianZctaData.features.find(
-      (f) => String(f.properties?.zcta) === selectedZcta
-    );
-    const centroid = feature ? getFeatureCentroid(feature) : null;
-    if (!centroid) return;
-
-    import("plotly.js-dist-min").then((PlotlyModule) => {
-      const Plotly = PlotlyModule.default || PlotlyModule;
-      Plotly.relayout(containerRef.current!, {
-        "mapbox.center": { lat: centroid.lat, lon: centroid.lon },
-        "mapbox.zoom": 12.8,
-      } as Record<string, unknown>).catch((e: unknown) =>
-        console.error("Plotly fly-to error:", e)
-      );
-    });
-  }, [selectedZcta, haitianZctaData]);
+  // Fit the view to an answer's ZIPs and places.
+  useEffect(() => {
+    if (!askHighlight || !haitianZctaData) return;
+    const zipSet = new Set(askHighlight.zips);
+    const features = haitianZctaData.features.filter((f) => zipSet.has(String(f.properties?.zcta)));
+    fitTo(features, askHighlight.places.map((p) => [p.lon, p.lat]));
+  }, [askHighlight, haitianZctaData, fitTo]);
 
   const mapStatus = useMemo(() => {
     const feature = selectedZcta
@@ -436,6 +524,21 @@ export default function NYCMapCore({
     const label = props
       ? parseModzctaLabel(String(props.label ?? ""), regionName)
       : null;
+
+    if (askHighlight && (askHighlight.zips.length || askHighlight.places.length)) {
+      const n = askHighlight.zips.length;
+      const m = askHighlight.places.length;
+      return {
+        title: "Showing your answer",
+        body: [
+          n ? `${n} ${n === 1 ? "ZIP" : "ZIPs"} outlined in cyan` : "",
+          m ? `${m} ${m === 1 ? "place" : "places"} marked in yellow` : "",
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        footnote: "Clear the map from the Ask tab. Other ZIPs are dimmed.",
+      };
+    }
 
     return getMapStatusLines({
       selectedZcta,
@@ -453,6 +556,7 @@ export default function NYCMapCore({
     loadingHaitianZcta,
     metro,
     regionPropertyKey,
+    askHighlight,
   ]);
 
   return (
@@ -464,6 +568,10 @@ export default function NYCMapCore({
         <p className="mt-0.5 text-caption leading-snug text-zinc-400">{mapStatus.body}</p>
         <p className="mt-1.5 text-caption text-zinc-500">{mapStatus.footnote}</p>
       </div>
+
+      <p className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 rounded-t bg-white/80 px-1.5 py-0.5 text-[10px] text-zinc-600">
+        {BASEMAP_ATTRIBUTION}
+      </p>
     </div>
   );
 }
