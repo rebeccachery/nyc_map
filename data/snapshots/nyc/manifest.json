@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "metro": "nyc",
+  "createdAt": "2026-11-13T20:55:55.680Z",
+  "sources": [
+    {
+      "id": "census-acs5-2022",
+      "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+      "url": "https://api.census.gov/data/2022/acs/acs5",
+      "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+    },
+    {
+      "id": "nyc-modzcta",
+      "name": "NYC Open Data, Modified ZIP Code Tabulation Areas (MODZCTA)",
+      "url": "https://data.cityofnewyork.us/Health/Modified-Zip-Code-Tabulation-Areas-MODZCTA-/pri4-ifjk",
+      "usedFor": "ZIP boundaries"
+    },
+    {
+      "id": "nyc-libraries",
+      "name": "NYC Open Data, Public Library Locations",
+      "url": "https://data.cityofnewyork.us/City-Government/Public-Library-Locations/feuq-due4",
+      "usedFor": "Library locations"
+    },
+    {
+      "id": "nyc-schools",
+      "name": "NYC Open Data, 2018–2019 School-Level Detailed Report Card",
+      "url": "https://data.cityofnewyork.us/Education/2018-2019-School-Level-Detailed-Report-Card/vw9i-7mzq",
+      "usedFor": "School locations and performance (graduation, attendance, ELL programs)"
+    }
+  ],
+  "counts": {
+    "zips": 177,
+    "reliableZips": 148,
+    "libraries": 216,
+    "schools": 424
+  },
+  "tierBreaks": {
+    "population": {
+      "lowMax": 0.25494739303565916,
+      "mediumMax": 0.82675550593009
+    },
+    "education": {
+      "lowMax": 42.402027027027025,
+      "mediumMax": 62.4945945945946
+    }
+  },
+  "processing": {
+    "coordinatePrecision": 5,
+    "simplifyToleranceDegrees": 0.00005,
+    "needMethod": "Composite education need = 40% Haitian-ancestry share rank + 30% households-without-internet rank + 30% adults-without-HS-diploma rank, ranked among reliable ZIPs in the metro.",
+    "tierMethod": "High / medium / low = top / middle / bottom third (33rd and 67th percentiles) among reliable ZIPs in the metro, computed separately for population share and composite score."
+  },
+  "warnings": [
+    "29 of 177 ZIPs have too few residents (under 500 total or under 10 Haitian ancestry) for reliable estimates and are tiered \"insufficient_data\".",
+    "1 schools fall outside every mapped ZIP (zip = null).",
+    "ACS figures are 5-year survey estimates with margins of error not shown here."
+  ]
+}
