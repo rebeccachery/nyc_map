@@ -1,0 +1,68 @@
+{
+  "notes": "Held-out rewordings of golden questions, written after prompt tuning ended and never used to tune it. Each reuses the answer key of the question in `of`. Measures sensitivity to phrasing: casual wording, typos, indirect asks.",
+  "questions": [
+    {
+      "id": "H01",
+      "of": "G07",
+      "question": "where in south florida are kids in high-need areas more than a mile from any library?"
+    },
+    {
+      "id": "H02",
+      "of": "G01",
+      "question": "33127 internet access - what % of homes are offline?"
+    },
+    {
+      "id": "H03",
+      "of": "G04",
+      "question": "rank the 5 neediest zips in broward cnty"
+    },
+    {
+      "id": "H04",
+      "of": "G05",
+      "question": "Miami Dade zip codes where Haitians are over a fifth of the population?"
+    },
+    {
+      "id": "H05",
+      "of": "G08",
+      "question": "If I live in 33034, which library is nearest to me?"
+    },
+    {
+      "id": "H06",
+      "of": "G12",
+      "question": "Broward vs Miami-Dade: which has the bigger Haitian community by headcount?"
+    },
+    {
+      "id": "H07",
+      "of": "G13",
+      "question": "count of high need zips per county please"
+    },
+    {
+      "id": "H08",
+      "of": "G22",
+      "question": "In Broward, which ZIPs have 10k or more people of Haitian descent?"
+    },
+    {
+      "id": "H09",
+      "of": "G26",
+      "question": "how many libraries r within a mile of 33311"
+    },
+    {
+      "id": "H10",
+      "of": "G35",
+      "question": "Do more Haitian-Americans live in Queens or in Brooklyn?"
+    },
+    {
+      "id": "H11",
+      "of": "G15",
+      "question": "I need dropout rates by ZIP for Miami high schools",
+      "mustMention": [
+        "dropout"
+      ]
+    },
+    {
+      "id": "H12",
+      "of": "G31",
+      "question": "palm beach high need zips with >30% adults w/o diploma"
+    }
+  ]
+}

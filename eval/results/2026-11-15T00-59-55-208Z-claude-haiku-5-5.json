@@ -1,0 +1,2336 @@
+{
+  "model": "claude-haiku-5-5",
+  "passed": 14,
+  "total": 15,
+  "costUsd": 0.013599000000000002,
+  "rows": [
+    {
+      "question": {
+        "id": "G01",
+        "metro": "miami",
+        "category": "lookup",
+        "question": "What share of households in 33127 have no internet?",
+        "interpretation": "pctNoInternet for ZIP 33127.",
+        "reference": {
+          "tool": "get_zip",
+          "input": {
+            "zcta": "33127"
+          }
+        },
+        "answer": {
+          "type": "value",
+          "field": "pctNoInternet",
+          "tolerance": 0.1
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "What share of households in 33127 have no internet?",
+        "metro": "miami",
+        "answer": "About 34% of households in ZIP 33127 (Miami-Dade County) have no internet subscription, based on ACS 2022 5-year estimates. This ZIP is high need, ranked 6 of 165 reliable ZIPs for educational need, and about 32% of its adults 25+ lack a high school diploma.",
+        "interpretation": "Read \"no internet\" as households with no internet subscription (pctNoInternet).",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "Library distances are straight-line miles from the nearest edge of each ZIP (a library inside the ZIP counts as 0 miles), not travel distance.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33127",
+            "label": "ZIP 33127 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33127"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": true,
+            "schools": true
+          },
+          "focusPlaceIds": [
+            "lib:miami:a82eb650",
+            "lib:miami:e3c0b459",
+            "lib:miami:34d2d31d",
+            "sch:miami:5506c641",
+            "sch:miami:66289a65",
+            "sch:miami:bbb66bfd"
+          ]
+        },
+        "followUps": [
+          "Which ZIPs in Miami-Dade have the highest share of households with no internet?",
+          "How many libraries are within 1 mile of ZIP 33127?",
+          "Which high-need ZIPs have no library within 1 mile?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "get_zip",
+            "toolUseId": "toolu_011Lh5wCM1zfAVgyNAxZrfMM",
+            "input": {
+              "zcta": "33127"
+            },
+            "ok": true,
+            "ms": 268
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4600,
+          "outputTokens": 428,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000737,
+        "latencyMs": 4033,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G01",
+        "category": "lookup",
+        "correct": true,
+        "reason": "matched via get_zip"
+      }
+    },
+    {
+      "question": {
+        "id": "G02",
+        "metro": "miami",
+        "category": "lookup",
+        "question": "How many people of Haitian ancestry live in ZIP 33161?",
+        "interpretation": "haitianPop for ZIP 33161 (ACS ancestry count).",
+        "reference": {
+          "tool": "get_zip",
+          "input": {
+            "zcta": "33161"
+          }
+        },
+        "answer": {
+          "type": "value",
+          "field": "haitianPop",
+          "tolerance": 0
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "How many people of Haitian ancestry live in ZIP 33161?",
+        "metro": "miami",
+        "answer": "About 19,567 residents of ZIP 33161 (Miami-Dade County) report Haitian ancestry. That is 37% of the ZIP's 52,824 residents, the highest Haitian share in this group of figures, and the ZIP ranks 5 of 165 reliable ZIPs for educational need (High Need). These are ACS 2022 5-year estimates, which carry margins of error.",
+        "interpretation": "Read \"Haitian people\" as residents reporting Haitian ancestry, the measure this map uses.",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "Library distances are straight-line miles from the nearest edge of each ZIP (a library inside the ZIP counts as 0 miles), not travel distance.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33161",
+            "label": "ZIP 33161 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33161"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": true,
+            "schools": true
+          },
+          "focusPlaceIds": [
+            "lib:miami:c57aab71",
+            "lib:miami:9c664da3",
+            "lib:miami:9b4deaa0",
+            "sch:miami:2e4a7b8c",
+            "sch:miami:3862673b",
+            "sch:miami:7dab3107"
+          ]
+        },
+        "followUps": [
+          "Which ZIPs in Miami-Dade have the highest Haitian-ancestry share?",
+          "Which high-need ZIPs have no library within 1 mile?",
+          "How many libraries are near ZIP 33161?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "get_zip",
+            "toolUseId": "toolu_01RoYbD8ktz5b2iDZp2tCNeX",
+            "input": {
+              "zcta": "33161"
+            },
+            "ok": true,
+            "ms": 0
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4611,
+          "outputTokens": 458,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000753,
+        "latencyMs": 3193,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G02",
+        "category": "lookup",
+        "correct": true,
+        "reason": "matched via get_zip"
+      }
+    },
+    {
+      "question": {
+        "id": "G03",
+        "metro": "miami",
+        "category": "lookup",
+        "question": "Is 33311 a high-need ZIP?",
+        "interpretation": "Education need tier of 33311; the answer should be yes/no with the tier.",
+        "reference": {
+          "tool": "get_zip",
+          "input": {
+            "zcta": "33311"
+          }
+        },
+        "answer": {
+          "type": "value",
+          "field": "educationNeedTier"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Is 33311 a high-need ZIP?",
+        "metro": "miami",
+        "answer": "Yes. ZIP 33311 (Broward County) is High Need, with an educational-need score of 88 (8 of 165 reliable ZIPs, where 1 is highest need). About 16% of residents report Haitian ancestry, 17% of households have no internet subscription, and 20% of adults 25+ lack a high school diploma. The ZIP has 3 libraries inside it and 12 schools inside it.",
+        "interpretation": "\"High need\" uses the default education-need measure: the top third of reliable ZIPs in the metro (score 60.5 or higher).",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "Library distances are straight-line miles from the nearest edge of each ZIP (a library inside the ZIP counts as 0 miles), not travel distance.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33311",
+            "label": "ZIP 33311 (Broward)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33311"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": true,
+            "schools": true
+          },
+          "focusPlaceIds": [
+            "lib:miami:1469960a",
+            "lib:miami:afea230d",
+            "lib:miami:e34de83f",
+            "sch:miami:0558466f",
+            "sch:miami:405d849f",
+            "sch:miami:5d645705"
+          ]
+        },
+        "followUps": [
+          "Which high-need ZIPs in Broward have no library within 1 mile?",
+          "How does 33311 compare with other high-need ZIPs in Broward County?",
+          "Which high-need ZIPs have the most residents with limited English?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "get_zip",
+            "toolUseId": "toolu_01PbhXWZFCkc2WB33B1nUBic",
+            "input": {
+              "zcta": "33311"
+            },
+            "ok": true,
+            "ms": 0
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4514,
+          "outputTokens": 475,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000752,
+        "latencyMs": 3986,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G03",
+        "category": "lookup",
+        "correct": true,
+        "reason": "matched via get_zip"
+      }
+    },
+    {
+      "question": {
+        "id": "G04",
+        "metro": "miami",
+        "category": "filter_rank",
+        "question": "What are the top 5 Broward ZIPs by educational need?",
+        "interpretation": "Reliable Broward ZIPs ranked by composite educationNeedScore, descending; top 5 in order.",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "regions": [
+              "Broward"
+            ],
+            "limit": 5
+          }
+        },
+        "answer": {
+          "type": "ranked_zips",
+          "n": 5
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "What are the top 5 Broward ZIPs by educational need?",
+        "metro": "miami",
+        "answer": "The top 5 Broward ZIPs by educational need score (out of 51 reliable Broward ZIPs, all rated high need) are:\n1. 33311 – score 88, 15.7% Haitian-ancestry, 19.9% of adults without a high school diploma, 17.0% of households without internet.\n2. 33060 – score 83, 14.7% Haitian-ancestry, 18.4% without a diploma, 13.1% without internet.\n3. 33313 – score 81.9, 21.0% Haitian-ancestry, 15.0% without a diploma, 12.9% without internet.\n4. 33023 – score 75.5, 13.0% Haitian-ancestry, 16.0% without a diploma, 10.1% without internet.\n5. 33441 – score 73.8, 6.9% Haitian-ancestry, 14.0% without a diploma, 14.4% without internet.\nThe score is a 0–100 composite (40% Haitian-ancestry share, 30% households without internet, 30% adults without a diploma), so a higher score means greater need. Figures are ACS 2022 5-year estimates with margins of error.",
+        "interpretation": "Read \"need\" as the default educational-need score; \"Broward\" as the Broward County region.",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "2 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33311",
+            "label": "ZIP 33311 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33060",
+            "label": "ZIP 33060 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33313",
+            "label": "ZIP 33313 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33023",
+            "label": "ZIP 33023 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33441",
+            "label": "ZIP 33441 (Broward)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33311",
+            "33060",
+            "33313",
+            "33023",
+            "33441",
+            "33309",
+            "33069",
+            "33068",
+            "33064",
+            "33319",
+            "33312",
+            "33009",
+            "33027",
+            "33321",
+            "33304",
+            "33063",
+            "33004",
+            "33351",
+            "33065",
+            "33334",
+            "33442",
+            "33025",
+            "33021",
+            "33020",
+            "33024",
+            "33314",
+            "33322",
+            "33026",
+            "33317",
+            "33315",
+            "33066",
+            "33073",
+            "33325",
+            "33324",
+            "33071",
+            "33305",
+            "33323",
+            "33028",
+            "33067",
+            "33062",
+            "33019",
+            "33076",
+            "33029",
+            "33308",
+            "33331",
+            "33301",
+            "33328",
+            "33326",
+            "33330",
+            "33316",
+            "33327"
+          ],
+          "needMode": "education",
+          "regions": [
+            "Broward"
+          ],
+          "layers": {
+            "libraries": false,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which Broward ZIPs with high need have no library within 1 mile?",
+          "How many Miami-Dade ZIPs are rated high educational need?",
+          "Which ZIPs have the largest number of residents with limited English?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_017ttB1jTd9Bw1PaAP6Xfhtd",
+            "input": {
+              "regions": [
+                "Broward"
+              ],
+              "limit": 5,
+              "sortBy": {
+                "key": "educationNeedScore",
+                "order": "desc"
+              }
+            },
+            "ok": true,
+            "matchCount": 51,
+            "ms": 2
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4367,
+          "outputTokens": 784,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000892,
+        "latencyMs": 4488,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G04",
+        "category": "filter_rank",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G05",
+        "metro": "miami",
+        "category": "filter_rank",
+        "question": "Which Miami-Dade ZIPs have more than 20% Haitian ancestry?",
+        "interpretation": "Reliable Miami-Dade ZIPs with haitianPopPct > 20.",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "regions": [
+              "Miami-Dade"
+            ],
+            "metrics": [
+              {
+                "metric": "haitianPopPct",
+                "min": 20
+              }
+            ],
+            "limit": 200
+          }
+        },
+        "answer": {
+          "type": "zip_set"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which Miami-Dade ZIPs have more than 20% Haitian ancestry?",
+        "metro": "miami",
+        "answer": "Five Miami-Dade ZIPs have more than 20% of residents reporting Haitian ancestry, listed from highest share down:\n- 33168: 40% (9,466 of 23,458 residents)\n- 33161: 37% (19,567 of 52,824)\n- 33162: 33% (15,869 of 48,326)\n- 33167: 29% (6,564 of 22,823)\n- 33150: 28% (8,987 of 31,807)\n\nAll five are also high on the educational-need score. Eleven Miami-Dade ZIPs with too few residents for reliable estimates were left out.",
+        "interpretation": "Read \"more than 20% Haitian ancestry\" as the haitianPopPct share of residents in Miami-Dade ZIPs, using reliable estimates only.",
+        "assumptions": [
+          "\"High need\" (population mode) means the top third of reliable ZIPs in Miami Metro by Haitian-ancestry share: ≥ 5.12% high, 0.84–5.12% medium.",
+          "11 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33168",
+            "label": "ZIP 33168 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33161",
+            "label": "ZIP 33161 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33162",
+            "label": "ZIP 33162 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33167",
+            "label": "ZIP 33167 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33150",
+            "label": "ZIP 33150 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33168",
+            "33161",
+            "33162",
+            "33167",
+            "33150"
+          ],
+          "needMode": "population",
+          "regions": [
+            "Miami-Dade"
+          ],
+          "layers": {
+            "libraries": false,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which of these five ZIPs have no library within 1 mile?",
+          "Which Miami-Dade ZIPs have the highest share of adults without a high school diploma?",
+          "How many French or Haitian Creole speakers with limited English are in ZIP 33161?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_015vJZY2XnVCFqYf67c3hBwa",
+            "input": {
+              "regions": [
+                "Miami-Dade"
+              ],
+              "need": {
+                "tiers": [
+                  "high",
+                  "medium",
+                  "low"
+                ],
+                "mode": "population"
+              },
+              "metrics": [
+                {
+                  "metric": "haitianPopPct",
+                  "min": 20
+                }
+              ],
+              "sortBy": {
+                "key": "haitianPopPct",
+                "order": "desc"
+              },
+              "limit": 50
+            },
+            "ok": true,
+            "matchCount": 5,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4454,
+          "outputTokens": 736,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000876,
+        "latencyMs": 4930,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G05",
+        "category": "filter_rank",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G06",
+        "metro": "nyc",
+        "category": "filter_rank",
+        "question": "Which 3 Brooklyn ZIPs have the most residents of Haitian ancestry?",
+        "interpretation": "Reliable Brooklyn ZIPs ranked by haitianPop count, descending; top 3 in order.",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "regions": [
+              "Brooklyn"
+            ],
+            "sortBy": {
+              "key": "haitianPop",
+              "order": "desc"
+            },
+            "limit": 3
+          }
+        },
+        "answer": {
+          "type": "ranked_zips",
+          "n": 3
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which 3 Brooklyn ZIPs have the most residents of Haitian ancestry?",
+        "metro": "nyc",
+        "answer": "The three Brooklyn ZIPs with the most residents of Haitian ancestry are:\n1. 11236 (Brooklyn): 13,929 residents of Haitian ancestry, about 14% of its 100,082 residents.\n2. 11226 (Brooklyn): 12,309 residents, about 12% of 101,053.\n3. 11203 (Brooklyn): 7,874 residents, about 10% of 78,506.\n\nAll three are also rated high educational need. Figures are ACS 2022 5-year estimates, which carry margins of error.",
+        "interpretation": "Read \"most residents of Haitian ancestry\" as the raw count of residents reporting Haitian ancestry, ranked within Brooklyn.</interpretation>\n<parameter name=\"citations\">[\"zip:11236\", \"zip:11226\", \"zip:11203\"]",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in New York City by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 62.5 is high, 42.4–62.5 medium, below 42.4 low.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:11236",
+            "label": "ZIP 11236 (Brooklyn)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:11226",
+            "label": "ZIP 11226 (Brooklyn)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:11203",
+            "label": "ZIP 11203 (Brooklyn)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "nyc-modzcta",
+            "name": "NYC Open Data, Modified ZIP Code Tabulation Areas (MODZCTA)",
+            "url": "https://data.cityofnewyork.us/Health/Modified-Zip-Code-Tabulation-Areas-MODZCTA-/pri4-ifjk",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "11236",
+            "11226",
+            "11203",
+            "11210",
+            "11234",
+            "11225",
+            "11213",
+            "11208",
+            "11212",
+            "11230",
+            "11221",
+            "11206",
+            "11207",
+            "11216",
+            "11233",
+            "11218",
+            "11229",
+            "11238",
+            "11223",
+            "11201",
+            "11205",
+            "11235",
+            "11239",
+            "11217",
+            "11231",
+            "11232",
+            "11214",
+            "11224",
+            "11219",
+            "11220",
+            "11228",
+            "11215",
+            "11204",
+            "11209",
+            "11222",
+            "11237",
+            "11211"
+          ],
+          "needMode": "education",
+          "regions": [
+            "Brooklyn"
+          ],
+          "layers": {
+            "libraries": false,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which Brooklyn ZIPs have high educational need and no library within a mile?",
+          "Which ZIPs in New York City have the highest share of residents of Haitian ancestry?",
+          "How does Brooklyn compare to Queens on need and Haitian population?"
+        ],
+        "warnings": [
+          "map_tool_use_id \"\"\"\" did not match a successful tool call."
+        ],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_01A6R5m1gt2reRvCHDoQvSiM",
+            "input": {
+              "regions": [
+                "Brooklyn"
+              ],
+              "sortBy": {
+                "key": "haitianPop",
+                "order": "desc"
+              },
+              "limit": 3
+            },
+            "ok": true,
+            "matchCount": 37,
+            "ms": 220
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4168,
+          "outputTokens": 811,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000885,
+        "latencyMs": 4797,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G06",
+        "category": "filter_rank",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G07",
+        "metro": "miami",
+        "category": "spatial",
+        "question": "Which Miami ZIPs have high need and no library within a mile?",
+        "interpretation": "Whole metro ('Miami' = the map). High education-need tier, reliable, and no library within 1 straight-line mile of the ZIP boundary (kiosks and the law library don't count).",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "need": {
+              "tiers": [
+                "high"
+              ]
+            },
+            "access": [
+              {
+                "kind": "library",
+                "withinMiles": 1,
+                "has": false
+              }
+            ],
+            "limit": 200
+          }
+        },
+        "answer": {
+          "type": "zip_set"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which Miami ZIPs have high need and no library within a mile?",
+        "metro": "miami",
+        "answer": "Ten ZIPs across the metro are high need (educational-need score of 60.5 or higher) and have no library within one mile. Eight are in Palm Beach County: 33460 (score 85.3, nearest library 2.1 miles), 33435 (83.9, 2.5 miles), 33461 (83.4, 1.1 miles), 33444 (76.4, 4.3 miles), 33403 (70.5, 1.7 miles), 33445 (66.5, 2.4 miles), 33404 (65.9, 2.9 miles), and 33436 (62.4, 1.1 miles). Two are in Miami-Dade County: 33030 (80.5, 1.7 miles) and 33034 (79.5, 3.6 miles). None in Broward County matched. Note that \"high need\" here means the top third of reliable ZIPs in the metro, so a score of 60.5 is the cut-off.",
+        "interpretation": "Read \"Miami\" as the whole metro (Miami-Dade, Broward, Palm Beach), and \"high need\" as the education-need tier. \"Within a mile\" is measured from the ZIP's nearest edge.",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "Library distances are straight-line miles from the nearest edge of each ZIP (a library inside the ZIP counts as 0 miles), not travel distance.",
+          "Libraries are public library locations from county and city GIS data; tutoring centers and school libraries are not included. Broward County Law Library and UHealth Jackson Station Library Kiosk are not counted as library access.",
+          "16 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33460",
+            "label": "ZIP 33460 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33435",
+            "label": "ZIP 33435 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33461",
+            "label": "ZIP 33461 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33444",
+            "label": "ZIP 33444 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33403",
+            "label": "ZIP 33403 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33445",
+            "label": "ZIP 33445 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33404",
+            "label": "ZIP 33404 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33436",
+            "label": "ZIP 33436 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33030",
+            "label": "ZIP 33030 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33034",
+            "label": "ZIP 33034 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33460",
+            "33435",
+            "33461",
+            "33030",
+            "33034",
+            "33444",
+            "33403",
+            "33445",
+            "33404",
+            "33436"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": true,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which high-need ZIPs in Miami-Dade have the most Haitian residents?",
+          "Which high-need ZIPs have the most French or Haitian Creole speakers with limited English?",
+          "What libraries are nearest to ZIP 33460?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_01U6drRGLfyy8ZvFMWjkzkMV",
+            "input": {
+              "need": {
+                "mode": "education",
+                "tiers": [
+                  "high"
+                ]
+              },
+              "access": [
+                {
+                  "kind": "library",
+                  "withinMiles": 1,
+                  "has": false
+                }
+              ],
+              "limit": 50
+            },
+            "ok": true,
+            "matchCount": 10,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 5559,
+          "outputTokens": 876,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.001057,
+        "latencyMs": 4322,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G07",
+        "category": "spatial",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G08",
+        "metro": "miami",
+        "category": "spatial",
+        "question": "What's the closest library to 33034?",
+        "interpretation": "Library with the smallest straight-line distance to ZIP 33034's boundary.",
+        "reference": {
+          "tool": "find_places",
+          "input": {
+            "kind": "library",
+            "nearZip": "33034",
+            "limit": 1
+          }
+        },
+        "answer": {
+          "type": "nearest_place"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "What's the closest library to 33034?",
+        "metro": "miami",
+        "answer": "The closest library to ZIP 33034 (Miami-Dade County) is the Naranja Branch at 14850 SW 280th St, about 3.5 miles away (straight-line, measured from the ZIP's nearest edge; the branch sits in ZIP 33033). The next closest is South Dade Regional in Cutler Bay (ZIP 33189), about 9.5 miles away. ZIP 33034 has no library inside its boundaries, and it is a high-need ZIP (education need score 79.5, ranked 21 of 165 reliable ZIPs).",
+        "interpretation": "Read \"closest\" as straight-line distance from the ZIP's nearest edge.",
+        "assumptions": [
+          "Library distances are straight-line miles from the nearest edge of each ZIP (a library inside the ZIP counts as 0 miles), not travel distance.",
+          "Libraries are public library locations from county and city GIS data; tutoring centers and school libraries are not included. Broward County Law Library and UHealth Jackson Station Library Kiosk are not counted as library access.",
+          "Only places within 10 miles are considered.",
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33034",
+            "label": "ZIP 33034 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "lib:miami:4913ec8c",
+            "label": "Naranja Branch, Miami-Dade (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:2c9de204",
+            "label": "South Dade Regional, Cutler Bay (library)",
+            "sourceId": "mdc-libraries"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          },
+          {
+            "id": "mdc-libraries",
+            "name": "Miami-Dade County GIS, Library layer (MD_Emaps)",
+            "url": "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/3",
+            "usedFor": "Miami-Dade library locations"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33034"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": true,
+            "schools": true
+          },
+          "focusPlaceIds": [
+            "lib:miami:4913ec8c",
+            "lib:miami:2c9de204",
+            "sch:miami:125f789c",
+            "sch:miami:a12da578",
+            "sch:miami:aba363fd"
+          ]
+        },
+        "followUps": [
+          "Which high-need ZIPs in Miami-Dade have no library within 1 mile?",
+          "How many schools are within 1 mile of 33034?",
+          "Which ZIPs in Miami-Dade have the highest share of residents with Haitian ancestry?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_places",
+            "toolUseId": "toolu_01Tsxg4CWBPwwZ53suCh78yb",
+            "input": {
+              "kind": "library",
+              "nearZip": "33034",
+              "limit": 3
+            },
+            "ok": true,
+            "matchCount": 2,
+            "ms": 1
+          },
+          {
+            "tool": "get_zip",
+            "toolUseId": "toolu_016USFyNsmbg5tnzYbH5vpw6",
+            "input": {
+              "zcta": "33034"
+            },
+            "ok": true,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 5057,
+          "outputTokens": 639,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000888,
+        "latencyMs": 3677,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G08",
+        "category": "spatial",
+        "correct": true,
+        "reason": "matched via find_places"
+      }
+    },
+    {
+      "question": {
+        "id": "G09",
+        "metro": "miami",
+        "category": "spatial",
+        "question": "How many libraries are within 2 miles of 33150?",
+        "interpretation": "Count of libraries within 2 straight-line miles of ZIP 33150's boundary, including any inside it.",
+        "reference": {
+          "tool": "find_places",
+          "input": {
+            "kind": "library",
+            "nearZip": "33150",
+            "withinMiles": 2,
+            "limit": 100
+          }
+        },
+        "answer": {
+          "type": "count"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "How many libraries are within 2 miles of 33150?",
+        "metro": "miami",
+        "answer": "Seven libraries are within 2 miles of ZIP 33150 (Miami-Dade County). Two are inside the ZIP itself: Arcola Lakes Branch and Edison Center Branch (both 0.0 miles). The others are Little River Branch (0.2 miles), Lemon City Branch (0.6 miles), Model City Branch (1.2 miles), North Central Branch (1.6 miles), and Allapattah Branch (1.7 miles). Distances are straight-line from the ZIP's nearest edge. These count public libraries only; school libraries and tutoring centers are not included.",
+        "interpretation": "Distance measured from the nearest edge of ZIP 33150, as the map does by default.",
+        "assumptions": [
+          "Library distances are straight-line miles from the nearest edge of each ZIP (a library inside the ZIP counts as 0 miles), not travel distance.",
+          "Libraries are public library locations from county and city GIS data; tutoring centers and school libraries are not included. Broward County Law Library and UHealth Jackson Station Library Kiosk are not counted as library access."
+        ],
+        "citations": [
+          {
+            "id": "lib:miami:9c664da3",
+            "label": "Arcola Lakes Branch, Miami (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:a82eb650",
+            "label": "Edison Center Branch, Miami (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:9b4deaa0",
+            "label": "Little River Branch, Miami (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:e3c0b459",
+            "label": "Lemon City Branch, Miami (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:851aa371",
+            "label": "Model City Branch, Miami (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:71166a48",
+            "label": "North Central Branch, Miami-Dade (library)",
+            "sourceId": "mdc-libraries"
+          },
+          {
+            "id": "lib:miami:3a7a363c",
+            "label": "Allapattah Branch, Miami (library)",
+            "sourceId": "mdc-libraries"
+          }
+        ],
+        "sources": [
+          {
+            "id": "mdc-libraries",
+            "name": "Miami-Dade County GIS, Library layer (MD_Emaps)",
+            "url": "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/3",
+            "usedFor": "Miami-Dade library locations"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33150"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": true,
+            "schools": false
+          },
+          "focusPlaceIds": [
+            "lib:miami:9c664da3",
+            "lib:miami:a82eb650",
+            "lib:miami:9b4deaa0",
+            "lib:miami:e3c0b459",
+            "lib:miami:851aa371",
+            "lib:miami:71166a48",
+            "lib:miami:3a7a363c"
+          ]
+        },
+        "followUps": [
+          "Which ZIPs have no library within 2 miles?",
+          "How many schools are within 2 miles of 33150?",
+          "What is the educational need score for 33150?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_places",
+            "toolUseId": "toolu_01Losi2eV3grzBXRNfSkVG99",
+            "input": {
+              "kind": "library",
+              "nearZip": "33150",
+              "withinMiles": 2,
+              "limit": 100
+            },
+            "ok": true,
+            "matchCount": 7,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4456,
+          "outputTokens": 649,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000833,
+        "latencyMs": 3258,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G09",
+        "category": "spatial",
+        "correct": true,
+        "reason": "matched via find_places"
+      }
+    },
+    {
+      "question": {
+        "id": "G10",
+        "metro": "miami",
+        "category": "compound",
+        "question": "Which high-need Broward ZIPs have more than 12% of households without internet?",
+        "interpretation": "Reliable Broward ZIPs in the high education-need tier with pctNoInternet > 12.",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "regions": [
+              "Broward"
+            ],
+            "need": {
+              "tiers": [
+                "high"
+              ]
+            },
+            "metrics": [
+              {
+                "metric": "pctNoInternet",
+                "min": 12
+              }
+            ],
+            "limit": 200
+          }
+        },
+        "answer": {
+          "type": "zip_set"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which high-need Broward ZIPs have more than 12% of households without internet?",
+        "metro": "miami",
+        "answer": "Five high-need Broward ZIPs have more than 12% of households without internet, listed from highest need score down:\n- 33311: 17% without internet, score 88\n- 33060: 13% without internet, score 83\n- 33313: 13% without internet, score 82\n- 33441: 14% without internet, score 74\n- 33027: 12.2% without internet, score 60.5 (just at the high-need cut-off)\n\n\"High need\" means the top third of reliable ZIPs in the metro by a composite score (Haitian-ancestry share, households without internet, and adults without a high school diploma). Two other Broward ZIPs were excluded because they have too few residents for reliable estimates.",
+        "interpretation": "Read \"high-need\" as the education-need tier (score ≥ 60.5) and \"more than 12%\" as strictly above 12 percent of households without internet.</interpretation>\n<parameter name=\"citations\">[\"zip:33311\",\"zip:33060\",\"zip:33313\",\"zip:33441\",\"zip:33027\"]",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "2 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33311",
+            "label": "ZIP 33311 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33060",
+            "label": "ZIP 33060 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33313",
+            "label": "ZIP 33313 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33441",
+            "label": "ZIP 33441 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33027",
+            "label": "ZIP 33027 (Broward)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33311",
+            "33060",
+            "33313",
+            "33441",
+            "33027"
+          ],
+          "needMode": "education",
+          "regions": [
+            "Broward"
+          ],
+          "layers": {
+            "libraries": false,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which high-need Broward ZIPs have no library within 1 mile?",
+          "What share of Broward's adults lack a high school diploma by ZIP among high-need areas?",
+          "Which Broward ZIPs have the most Haitian-ancestry residents?"
+        ],
+        "warnings": [
+          "map_tool_use_id \"toolu_find_zips_broward_high_internet\" did not match a successful tool call."
+        ],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_01SwzdhKoNipYaH5rrV7dM4o",
+            "input": {
+              "regions": [
+                "Broward"
+              ],
+              "need": {
+                "tiers": [
+                  "high"
+                ],
+                "mode": "education"
+              },
+              "metrics": [
+                {
+                  "metric": "pctNoInternet",
+                  "min": 12
+                }
+              ],
+              "limit": 50
+            },
+            "ok": true,
+            "matchCount": 5,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4395,
+          "outputTokens": 770,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000888,
+        "latencyMs": 3858,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G10",
+        "category": "compound",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G11",
+        "metro": "miami",
+        "category": "compound",
+        "question": "Which high-need Miami-Dade ZIPs have fewer than two public schools within a mile of the ZIP's center?",
+        "interpretation": "Reliable Miami-Dade ZIPs in the high tier with 0 or 1 public schools within 1 straight-line mile of a central point inside the ZIP (measure = center).",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "regions": [
+              "Miami-Dade"
+            ],
+            "need": {
+              "tiers": [
+                "high"
+              ]
+            },
+            "access": [
+              {
+                "kind": "school",
+                "withinMiles": 1,
+                "has": false,
+                "atLeast": 2,
+                "measure": "center"
+              }
+            ],
+            "limit": 200
+          }
+        },
+        "answer": {
+          "type": "zip_set"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which high-need Miami-Dade ZIPs have fewer than two public schools within a mile of the ZIP's center?",
+        "metro": "miami",
+        "answer": "Six high-need Miami-Dade ZIPs have fewer than two public schools within a mile of their center: 33138, 33030, 33034, 33181, 33170, and 33137. Their educational-need scores run from 62.8 (33137) to 82 (33138). The strongest cases are 33030 and 33034, where adults without a high school diploma are 39% and 36%. 33138 has the highest Haitian-ancestry share of the six at 18%, and 33181 is close behind at 17%. Schools here are public schools from county GIS data; private schools are not counted.",
+        "interpretation": "\"High need\" uses the educational-need tier (composite score 60.5 or higher, top third of reliable Miami Metro ZIPs). \"Within a mile\" is measured from each ZIP's center, as you asked. Scope is Miami-Dade County only. The count of schools within a mile was below two for each of the six ZIPs; the exact counts are not shown.</interpretation>\n<parameter name=\"citations\">[\"zip:33138\",\"zip:33030\",\"zip:33034\",\"zip:33181\",\"zip:33170\",\"zip:33137\"]",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "School distances are straight-line miles from a central point inside each ZIP, not travel distance.",
+          "Schools are public schools from county GIS data; private schools are not included and Miami data has no performance metrics.",
+          "11 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33138",
+            "label": "ZIP 33138 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33030",
+            "label": "ZIP 33030 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33034",
+            "label": "ZIP 33034 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33181",
+            "label": "ZIP 33181 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33170",
+            "label": "ZIP 33170 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33137",
+            "label": "ZIP 33137 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33138",
+            "33030",
+            "33034",
+            "33181",
+            "33170",
+            "33137"
+          ],
+          "needMode": "education",
+          "regions": [
+            "Miami-Dade"
+          ],
+          "layers": {
+            "libraries": false,
+            "schools": true
+          }
+        },
+        "followUps": [
+          "Which high-need Miami-Dade ZIPs have no library within a mile of their center?",
+          "Which high-need ZIPs in Broward have fewer than two schools within a mile of their center?",
+          "What is the Miami-Dade summary for high-need ZIPs and libraries?"
+        ],
+        "warnings": [
+          "map_tool_use_id \"\"\"\" did not match a successful tool call."
+        ],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_01MJgPbPUjuC7xY9JMg94PoX",
+            "input": {
+              "need": {
+                "tiers": [
+                  "high"
+                ]
+              },
+              "regions": [
+                "Miami-Dade"
+              ],
+              "access": [
+                {
+                  "kind": "school",
+                  "withinMiles": 1,
+                  "has": false,
+                  "atLeast": 2,
+                  "measure": "center"
+                }
+              ],
+              "limit": 100
+            },
+            "ok": true,
+            "matchCount": 6,
+            "ms": 1
+          },
+          {
+            "tool": "describe_data",
+            "toolUseId": "toolu_01C1VKbMv16hhAuXfPj4jJSW",
+            "input": {},
+            "ok": true,
+            "ms": 0
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 6712,
+          "outputTokens": 1197,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.001333,
+        "latencyMs": 6497,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G11",
+        "category": "compound",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G12",
+        "metro": "miami",
+        "category": "compare",
+        "question": "Which county has more residents of Haitian ancestry, Broward or Miami-Dade?",
+        "interpretation": "Compare summed haitianPop across ZIPs assigned to each county.",
+        "reference": {
+          "tool": "summarize_regions",
+          "input": {
+            "regions": [
+              "Broward",
+              "Miami-Dade"
+            ]
+          }
+        },
+        "answer": {
+          "type": "argmax_region",
+          "field": "haitianPop"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which county has more residents of Haitian ancestry, Broward or Miami-Dade?",
+        "metro": "miami",
+        "answer": "Broward County has more residents of Haitian ancestry: about 128,878 people, compared with about 114,958 in Miami-Dade County. Broward is also the larger share of its population (6.6% versus 4.3%), even though Miami-Dade has more total residents (2.69 million versus 1.94 million). These are ACS 2022 5-year estimates, which carry margins of error.",
+        "interpretation": "Read \"more residents of Haitian ancestry\" as the count of residents reporting Haitian ancestry, not the share of the population.</interpretation>\n<parameter name=\"citations\">[]",
+        "assumptions": [
+          "\"High need\" (population mode) means the top third of reliable ZIPs in Miami Metro by Haitian-ancestry share: ≥ 5.12% high, 0.84–5.12% medium.",
+          "Totals add up the ZIPs assigned to each county; a ZIP crossing a county line counts fully toward the one holding most of its land, so totals differ slightly from official county figures.",
+          "Median internet and diploma rates are medians across reliable ZIPs, not population-weighted averages.",
+          "highNeedZipsWithoutLibraryWithin1Mile measures from each ZIP's nearest edge, in straight-line miles.",
+          "Libraries are public library locations from county and city GIS data; tutoring centers and school libraries are not included. Broward County Law Library and UHealth Jackson Station Library Kiosk are not counted as library access.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          },
+          {
+            "id": "mdc-libraries",
+            "name": "Miami-Dade County GIS, Library layer (MD_Emaps)",
+            "url": "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/3",
+            "usedFor": "Miami-Dade library locations"
+          },
+          {
+            "id": "mdc-schools",
+            "name": "Miami-Dade County GIS, Public Schools layer (MD_Emaps)",
+            "url": "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/25",
+            "usedFor": "Miami-Dade school locations"
+          },
+          {
+            "id": "broward-libraries",
+            "name": "Broward County GIS, Libraries layer",
+            "url": "https://bcgishub.broward.org/server/rest/services/Core/Libraries/MapServer/0",
+            "usedFor": "Broward library locations"
+          },
+          {
+            "id": "broward-schools",
+            "name": "Broward County GeoHub, Schools",
+            "url": "https://geohub-bcgis.opendata.arcgis.com/datasets/b888ffdf409044829a8cfe9d69c16a02_0",
+            "usedFor": "Broward school locations"
+          }
+        ],
+        "map": null,
+        "followUps": [
+          "Which Broward ZIP codes have the highest share of residents of Haitian ancestry?",
+          "Which Miami-Dade ZIP codes have the highest educational need?",
+          "Which ZIPs in Miami-Dade have no library within 1 mile?"
+        ],
+        "warnings": [
+          "map_tool_use_id \"\"\"\" did not match a successful tool call."
+        ],
+        "trace": [
+          {
+            "tool": "summarize_regions",
+            "toolUseId": "toolu_01KcRfnnMKogvConjeNaeocn",
+            "input": {
+              "regions": [
+                "Broward",
+                "Miami-Dade"
+              ],
+              "needMode": "population"
+            },
+            "ok": true,
+            "ms": 2
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 3932,
+          "outputTokens": 526,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000719,
+        "latencyMs": 3980,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G12",
+        "category": "compare",
+        "correct": true,
+        "reason": "matched via summarize_regions"
+      }
+    },
+    {
+      "question": {
+        "id": "G13",
+        "metro": "miami",
+        "category": "compare",
+        "question": "How many high-need ZIPs does each county have?",
+        "interpretation": "Count of high education-need ZIPs per county.",
+        "reference": {
+          "tool": "summarize_regions",
+          "input": {}
+        },
+        "answer": {
+          "type": "region_values",
+          "field": "tierCounts.high"
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "How many high-need ZIPs does each county have?",
+        "metro": "miami",
+        "answer": "Miami-Dade has 23 high-need ZIPs, Broward has 13, and Palm Beach has 19, for 55 across the metro. High need means the top third of reliable ZIPs by the educational-need score (which combines Haitian-ancestry share, households without internet, and adults without a high school diploma; score 60.5 or above). Miami-Dade also has 24 medium and 20 low-need ZIPs, Broward 20 medium and 18 low, and Palm Beach 11 medium and 17 low. Counts exclude ZIPs with insufficient data (11 in Miami-Dade, 2 in Broward, 3 in Palm Beach).",
+        "interpretation": "Read \"high need\" as the education-need tier (default mode), counted by county.</interpretation>\n<parameter name=\"citations\">[]",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "Totals add up the ZIPs assigned to each county; a ZIP crossing a county line counts fully toward the one holding most of its land, so totals differ slightly from official county figures.",
+          "Median internet and diploma rates are medians across reliable ZIPs, not population-weighted averages.",
+          "highNeedZipsWithoutLibraryWithin1Mile measures from each ZIP's nearest edge, in straight-line miles.",
+          "Libraries are public library locations from county and city GIS data; tutoring centers and school libraries are not included. Broward County Law Library and UHealth Jackson Station Library Kiosk are not counted as library access.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          },
+          {
+            "id": "mdc-libraries",
+            "name": "Miami-Dade County GIS, Library layer (MD_Emaps)",
+            "url": "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/3",
+            "usedFor": "Miami-Dade library locations"
+          },
+          {
+            "id": "mdc-schools",
+            "name": "Miami-Dade County GIS, Public Schools layer (MD_Emaps)",
+            "url": "https://gisweb.miamidade.gov/arcgis/rest/services/MD_Emaps/MapServer/25",
+            "usedFor": "Miami-Dade school locations"
+          },
+          {
+            "id": "broward-libraries",
+            "name": "Broward County GIS, Libraries layer",
+            "url": "https://bcgishub.broward.org/server/rest/services/Core/Libraries/MapServer/0",
+            "usedFor": "Broward library locations"
+          },
+          {
+            "id": "broward-schools",
+            "name": "Broward County GeoHub, Schools",
+            "url": "https://geohub-bcgis.opendata.arcgis.com/datasets/b888ffdf409044829a8cfe9d69c16a02_0",
+            "usedFor": "Broward school locations"
+          },
+          {
+            "id": "pbc-libraries",
+            "name": "Palm Beach County GIS, Education Open Data (Libraries)",
+            "url": "https://maps.co.palm-beach.fl.us/arcgis/rest/services/OpenData/Education_Open_Data/MapServer/5",
+            "usedFor": "Palm Beach library locations"
+          },
+          {
+            "id": "pbc-schools",
+            "name": "Palm Beach County GIS, Education Open Data (Schools)",
+            "url": "https://maps.co.palm-beach.fl.us/arcgis/rest/services/OpenData/Education_Open_Data/MapServer/0",
+            "usedFor": "Palm Beach school locations"
+          }
+        ],
+        "map": null,
+        "followUps": [
+          "Which high-need ZIPs in Palm Beach have no library within 1 mile?",
+          "Which ZIPs have the highest educational-need scores in Miami-Dade?",
+          "How do the three counties compare on share of households without internet?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "summarize_regions",
+            "toolUseId": "toolu_01K3Yi1iEiCqgf4wvoS5nT1Q",
+            "input": {},
+            "ok": true,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 4363,
+          "outputTokens": 587,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.000793,
+        "latencyMs": 3173,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G13",
+        "category": "compare",
+        "correct": true,
+        "reason": "matched via summarize_regions"
+      }
+    },
+    {
+      "question": {
+        "id": "G14",
+        "metro": "miami",
+        "category": "ambiguous",
+        "question": "Where is need worst in Miami?",
+        "interpretation": "Ambiguous: 'Miami' could be the metro or Miami-Dade, 'need' could be either mode. Acceptable: the top ZIPs by composite educational need across the metro, with the definition stated. Scored on overlap with the top 5 plus disclosure.",
+        "reference": {
+          "tool": "find_zips",
+          "input": {
+            "limit": 5
+          }
+        },
+        "answer": {
+          "type": "ranked_zips",
+          "n": 5,
+          "scoring": "overlap",
+          "mustDisclose": [
+            "definition of need"
+          ]
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Where is need worst in Miami?",
+        "metro": "miami",
+        "answer": "Across the whole Miami metro, the highest educational need is concentrated in Miami-Dade ZIPs, with Palm Beach and Broward also showing up. The worst-ranked ZIPs are 33150 (Miami-Dade, score 95.8; 28% Haitian-ancestry, 27% of adults without a diploma, 31% of households without internet), 33168 (Miami-Dade, score 93.9; 40% Haitian-ancestry, the highest Haitian share in this top group), 33167 (Miami-Dade, score 92.8), 33430 (Palm Beach, score 92.4; 33% of adults without a diploma), 33161 (Miami-Dade, score 91.1; the largest Haitian population at about 19,600), 33127 (Miami-Dade, score 90.2; 34% of households without internet), 33162 (Miami-Dade, score 88.1), 33311 (Broward, score 88.0), 33460 (Palm Beach, score 85.3), and 33435 (Palm Beach, score 83.9). In total, 55 ZIPs fall in the high-need tier (score 60.5 or above); these are the top 10. Scores are a composite of Haitian-ancestry share, households without internet, and adults without a high school diploma, and the figures are ACS estimates with margins of error.",
+        "interpretation": "Read \"Miami\" as the whole metro (Miami-Dade, Broward, Palm Beach), and \"need\" as the educational-need composite score.",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "16 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33150",
+            "label": "ZIP 33150 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33168",
+            "label": "ZIP 33168 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33167",
+            "label": "ZIP 33167 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33430",
+            "label": "ZIP 33430 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33161",
+            "label": "ZIP 33161 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33127",
+            "label": "ZIP 33127 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33162",
+            "label": "ZIP 33162 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33311",
+            "label": "ZIP 33311 (Broward)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33460",
+            "label": "ZIP 33460 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33435",
+            "label": "ZIP 33435 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33150",
+            "33168",
+            "33167",
+            "33430",
+            "33161",
+            "33127",
+            "33162",
+            "33311",
+            "33460",
+            "33435",
+            "33461",
+            "33169",
+            "33060",
+            "33417",
+            "33138",
+            "33313",
+            "33493",
+            "33147",
+            "33407",
+            "33030",
+            "33034",
+            "33054",
+            "33415",
+            "33142",
+            "33444",
+            "33462",
+            "33023",
+            "33056",
+            "33409",
+            "33136",
+            "33441",
+            "33476",
+            "33463",
+            "33309",
+            "33181",
+            "33403",
+            "33069",
+            "33068",
+            "33179",
+            "33064",
+            "33319",
+            "33135",
+            "33445",
+            "33125",
+            "33128",
+            "33404",
+            "33055",
+            "33312",
+            "33413",
+            "33401",
+            "33009",
+            "33170",
+            "33137",
+            "33436",
+            "33027"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": false,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which high-need ZIPs have no library within 1 mile?",
+          "Summarize high-need ZIP counts by county.",
+          "Which ZIPs have the most French or Haitian Creole speakers with limited English?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_01NxJKWfNNRvgLYDXcQxrVZM",
+            "input": {
+              "need": {
+                "mode": "education",
+                "tiers": [
+                  "high"
+                ]
+              },
+              "sortBy": {
+                "key": "educationNeedScore",
+                "order": "desc"
+              },
+              "limit": 10
+            },
+            "ok": true,
+            "matchCount": 55,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 5393,
+          "outputTokens": 975,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.00109,
+        "latencyMs": 4978,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G14",
+        "category": "ambiguous",
+        "correct": true,
+        "reason": "matched via find_zips"
+      }
+    },
+    {
+      "question": {
+        "id": "G15",
+        "metro": "miami",
+        "category": "out_of_scope",
+        "question": "Which Miami ZIPs have the lowest high school graduation rates?",
+        "interpretation": "Out of scope: Miami school data has no graduation rates. The agent should say so and may offer adults-without-diploma (pctNoHS) as a related measure, clearly labeled as different.",
+        "reference": {
+          "tool": "describe_data",
+          "input": {}
+        },
+        "answer": {
+          "type": "refusal",
+          "mustMention": [
+            "graduation",
+            "not in the data"
+          ]
+        }
+      },
+      "response": {
+        "status": "answered",
+        "question": "Which Miami ZIPs have the lowest high school graduation rates?",
+        "metro": "miami",
+        "answer": "The map does not contain high school graduation rates, so I used the closest available measure: the share of adults 25+ without a high school diploma (a different measure, not the same as graduation rates). By that measure, the ZIPs with the highest shares lacking a diploma are: 33493 (Palm Beach County) at 41.3%, 33030 (Miami-Dade) at 39.4%, 33128 (Miami-Dade) at 36.7%, 33034 (Miami-Dade) at 35.7%, 33142 (Miami-Dade) at 35.6%, 33430 (Palm Beach) at 32.9%, 33010 (Miami-Dade) at 32.5%, 33476 (Palm Beach) at 31.8%, 33127 (Miami-Dade) at 31.7%, and 33125 (Miami-Dade) at 31.6%. Of these, 33493, 33030, 33034, 33142, 33430, and 33127 also fall in the high educational-need tier, and 33127 and 33430 have the highest composite need scores. 165 ZIPs have this measure; the top 10 are shown.",
+        "interpretation": "No graduation-rate data exists in this map. Read the question as asking which ZIPs have the lowest educational attainment, measured by share of adults without a high school diploma.",
+        "assumptions": [
+          "\"High need\" means the top third of reliable ZIPs in Miami Metro by composite educational-need score (40% Haitian-ancestry share, 30% households without internet, 30% adults without a high school diploma): score ≥ 60.5 is high, 36.4–60.5 medium, below 36.4 low.",
+          "16 ZIPs in scope were excluded because they have too few residents for reliable estimates.",
+          "Figures are ACS 2022 5-year estimates, which carry margins of error."
+        ],
+        "citations": [
+          {
+            "id": "zip:33493",
+            "label": "ZIP 33493 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33030",
+            "label": "ZIP 33030 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33128",
+            "label": "ZIP 33128 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33034",
+            "label": "ZIP 33034 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33142",
+            "label": "ZIP 33142 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33430",
+            "label": "ZIP 33430 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33010",
+            "label": "ZIP 33010 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33476",
+            "label": "ZIP 33476 (Palm Beach)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33127",
+            "label": "ZIP 33127 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          },
+          {
+            "id": "zip:33125",
+            "label": "ZIP 33125 (Miami-Dade)",
+            "sourceId": "census-acs5-2022"
+          }
+        ],
+        "sources": [
+          {
+            "id": "census-acs5-2022",
+            "name": "U.S. Census Bureau, ACS 2022 5-year estimates",
+            "url": "https://api.census.gov/data/2022/acs/acs5",
+            "usedFor": "Haitian ancestry (B04006), population (B01003), Haitian Creole speakers (C16001), internet (B28002), educational attainment (B15003)"
+          },
+          {
+            "id": "tiger-zcta",
+            "name": "Census TIGERweb, ZIP Code Tabulation Areas",
+            "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/PUMA_TAD_TAZ_UGA_ZCTA/MapServer/11",
+            "usedFor": "ZIP boundaries"
+          }
+        ],
+        "map": {
+          "highlightZips": [
+            "33493",
+            "33030",
+            "33128",
+            "33034",
+            "33142",
+            "33430",
+            "33010",
+            "33476",
+            "33127",
+            "33125",
+            "33135",
+            "33174",
+            "33012",
+            "33136",
+            "33460",
+            "33150",
+            "33461",
+            "33054",
+            "33055",
+            "33172",
+            "33167",
+            "33168",
+            "33170",
+            "33147",
+            "33415",
+            "33033",
+            "33193",
+            "33409",
+            "33311",
+            "33407",
+            "33130",
+            "33161",
+            "33064",
+            "33463",
+            "33417",
+            "33166",
+            "33032",
+            "33060",
+            "33406",
+            "33016",
+            "33162",
+            "33165",
+            "33175",
+            "33405",
+            "33014",
+            "33444",
+            "33177",
+            "33018",
+            "33189",
+            "33068",
+            "33169",
+            "33023",
+            "33056",
+            "33183",
+            "33462",
+            "33309",
+            "33313",
+            "33435",
+            "33185",
+            "33314",
+            "33441",
+            "33155",
+            "33312",
+            "33015",
+            "33069",
+            "33190",
+            "33138",
+            "33413",
+            "33403",
+            "33035",
+            "33178",
+            "33319",
+            "33020",
+            "33404",
+            "33187",
+            "33157",
+            "33009",
+            "33445",
+            "33321",
+            "33334",
+            "33401",
+            "33182",
+            "33137",
+            "33024",
+            "33325",
+            "33139",
+            "33426",
+            "33470",
+            "33428",
+            "33181",
+            "33411",
+            "33063",
+            "33021",
+            "33436",
+            "33304",
+            "33141",
+            "33004",
+            "33134",
+            "33196",
+            "33317",
+            "33176",
+            "33179",
+            "33351",
+            "33322",
+            "33186",
+            "33173",
+            "33442",
+            "33065",
+            "33458",
+            "33140",
+            "33025",
+            "33073",
+            "33467",
+            "33026",
+            "33066",
+            "33027",
+            "33132",
+            "33414",
+            "33160",
+            "33324",
+            "33330",
+            "33323",
+            "33498",
+            "33133",
+            "33315",
+            "33431",
+            "33143",
+            "33484",
+            "33062",
+            "33180",
+            "33328",
+            "33305",
+            "33434",
+            "33028",
+            "33410",
+            "33496",
+            "33308",
+            "33301",
+            "33483",
+            "33412",
+            "33331",
+            "33071",
+            "33472",
+            "33019",
+            "33029",
+            "33156",
+            "33067",
+            "33446",
+            "33129",
+            "33326",
+            "33432",
+            "33418",
+            "33449",
+            "33486",
+            "33487",
+            "33437",
+            "33316",
+            "33433",
+            "33408",
+            "33076",
+            "33327",
+            "33131",
+            "33146",
+            "33158",
+            "33473"
+          ],
+          "needMode": "education",
+          "regions": null,
+          "layers": {
+            "libraries": false,
+            "schools": false
+          }
+        },
+        "followUps": [
+          "Which high-need ZIPs have no library within 1 mile?",
+          "Which ZIPs have the most Haitian-ancestry residents?",
+          "Which ZIPs have the highest share of households without internet?"
+        ],
+        "warnings": [],
+        "trace": [
+          {
+            "tool": "find_zips",
+            "toolUseId": "toolu_011wcTFBYv7nzSFPQBrTDpts",
+            "input": {
+              "sortBy": {
+                "key": "pctNoHS",
+                "order": "desc"
+              },
+              "limit": 10
+            },
+            "ok": true,
+            "matchCount": 165,
+            "ms": 1
+          }
+        ],
+        "model": "claude-haiku-5-5",
+        "usage": {
+          "inputTokens": 5483,
+          "outputTokens": 984,
+          "cacheWriteTokens": 0,
+          "cacheReadTokens": 6300
+        },
+        "costUsd": 0.001103,
+        "latencyMs": 5227,
+        "modelTurns": 2
+      },
+      "score": {
+        "id": "G15",
+        "category": "out_of_scope",
+        "correct": false,
+        "reason": "expected out_of_scope, got answered"
+      }
+    }
+  ]
+}
