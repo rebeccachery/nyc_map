@@ -47,7 +47,7 @@ export const METROS: MetroConfig[] = [
     label: "New York City",
     shortLabel: "NYC",
     status: "live",
-    haitianAncestryHint: "~850k Haitian ancestry",
+    haitianAncestryHint: "~119k residents of Haitian ancestry (ACS 2022)",
     defaultCenter: { lat: 40.7128, lon: -74.006, zoom: 10.2 },
     regions: [
       { id: "brooklyn", name: "Brooklyn", center: { lat: 40.6501, lon: -73.9496, zoom: 11.2 } },
@@ -87,7 +87,7 @@ export const METROS: MetroConfig[] = [
     label: "Miami Metro",
     shortLabel: "Miami",
     status: "live",
-    haitianAncestryHint: "~830k Haitian ancestry",
+    haitianAncestryHint: "~336k residents of Haitian ancestry (ACS 2022)",
     defaultCenter: { lat: 25.85, lon: -80.25, zoom: 9.5 },
     regions: [
       {
