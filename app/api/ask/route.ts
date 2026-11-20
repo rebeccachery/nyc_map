@@ -4,23 +4,15 @@ import { runAgent } from "@/lib/agent/runAgent";
 import { parseMetroId } from "@/lib/metroApi";
 import { getEngine } from "@/lib/query/engine";
 import { loadSnapshot } from "@/lib/snapshot/load";
+import { getUsageLimiter } from "@/lib/usageLimits";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-// Simple per-instance rate limit so a public demo can't run up an API bill.
-const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 20;
-const hits = new Map<string, number[]>();
-
-function rateLimited(key: string): boolean {
-  const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(key, recent);
-  return recent.length > MAX_PER_WINDOW;
-}
+// Visitors get the default model unless the deployment opts in to letting the request choose
+// (the eval harness and CLI call runAgent directly, so they aren't affected).
+const ALLOW_MODEL_CHOICE = process.env.ASK_ALLOW_MODEL_CHOICE === "true";
 
 export async function POST(request: Request) {
   let body: { question?: unknown; metro?: unknown; model?: unknown };
@@ -32,13 +24,16 @@ export async function POST(request: Request) {
 
   const question = typeof body.question === "string" ? body.question : "";
   const metro = parseMetroId(typeof body.metro === "string" ? body.metro : null);
-  const model = isModelId(body.model) ? body.model : DEFAULT_MODEL;
+  const model = ALLOW_MODEL_CHOICE && isModelId(body.model) ? body.model : DEFAULT_MODEL;
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (rateLimited(ip)) {
+  const limiter = getUsageLimiter();
+  const decision = await limiter.admit(ip);
+  if (!decision.ok) {
+    console.log(`[ask] limited reason=${decision.reason}`);
     return NextResponse.json(
-      { success: false, error: "Too many questions in a minute. Please wait a moment and try again." },
-      { status: 429 }
+      { success: false, error: decision.message },
+      { status: decision.reason === "budget" ? 503 : 429, headers: { "Retry-After": String(decision.retryAfterSeconds) } }
     );
   }
 
@@ -48,6 +43,7 @@ export async function POST(request: Request) {
       model,
       signal: request.signal,
     });
+    await limiter.charge(result.costUsd);
     console.log(
       `[ask] metro=${metro} model=${model} status=${result.status} turns=${result.modelTurns} ` +
         `tools=${result.trace.map((t) => t.tool).join(",")} cost=$${result.costUsd.toFixed(4)} ` +
