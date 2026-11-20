@@ -66,8 +66,8 @@ Four lessons carry over to any deployment like this. Public data needs tests as 
 - **Cost.** About $0.001 per question. A thousand questions a month is about $1 in model usage. The whole build and evaluation used about $1.
 - **Hosting.** One Next.js app. It needs one secret, `ANTHROPIC_API_KEY`. The basemap needs no key.
 - **Before each deploy.** `npm run verify` runs the tests, type check, basemap check and build.
-- **Guardrails already in place.** Questions are capped at 500 characters; each visitor gets 20 questions a minute; the app does not store questions.
-- **To do before public launch.** Set a monthly spend limit in the Claude Console. Replace the in-memory rate limit with a shared one if the host runs several instances.
+- **Guardrails already in place.** Questions are capped at 500 characters; each visitor gets 20 questions a minute and 100 a day; all visitors together share a daily budget (default $5, `ASK_DAILY_BUDGET_USD`); visitors can't switch to a pricier model; the app does not store questions.
+- **To do before public launch.** Set a monthly spend limit in the Claude Console. On Vercel, add Upstash Redis so the limits are shared across instances (without it they fall back to per-instance memory).
 - **Refreshing data.** `npm run snapshot`, then `npm run truth`, then `npm run eval -- --runs 3 --report`. If the score moves, the report says where.
 
 ## Limits
